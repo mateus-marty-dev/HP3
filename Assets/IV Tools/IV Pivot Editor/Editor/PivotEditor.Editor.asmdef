@@ -1,0 +1,18 @@
+{
+    "name": "PivotEditor.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:dbc37cac2623d844a8414d734ce67f86"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

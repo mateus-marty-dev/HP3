@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: b07961bb808b92d41aaa24a9d6f9120b
+timeCreated: 1508418923
+licenseType: Store
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 49290
+  packageName: Pivot Editor
+  packageVersion: 2.4
+  assetPath: Assets/IV Tools/IV Pivot Editor/Editor/PivotUtils.cs
+  uploadId: 739270

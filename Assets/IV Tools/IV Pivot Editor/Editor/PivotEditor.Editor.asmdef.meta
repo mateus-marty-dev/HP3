@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 60c2367a38cdbe34ca9326c624833165
+AssemblyDefinitionImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 49290
+  packageName: Pivot Editor
+  packageVersion: 2.4
+  assetPath: Assets/IV Tools/IV Pivot Editor/Editor/PivotEditor.Editor.asmdef
+  uploadId: 739270

@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: cfef70f8bd8370047bb18dd3758ce287
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 49290
+  packageName: Pivot Editor
+  packageVersion: 2.4
+  assetPath: Assets/IV Tools/IV Pivot Editor/Runtime/RuntimePivot.cs
+  uploadId: 739270

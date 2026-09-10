@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: dbc37cac2623d844a8414d734ce67f86
+AssemblyDefinitionImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 49290
+  packageName: Pivot Editor
+  packageVersion: 2.4
+  assetPath: Assets/IV Tools/IV Pivot Editor/Runtime/PivotEditor.Runtime.asmdef
+  uploadId: 739270
