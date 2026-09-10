@@ -5,10 +5,21 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private Camera playerCamera;
     [SerializeField] private float interactionDistance = 3f;
 
+    private PickupInteractable heldObject;
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
+            // Wenn wir bereits etwas tragen:
+            // direkt ablegen, kein Raycast nötig.
+            if (heldObject != null)
+            {
+                heldObject.Interact();
+                heldObject = null;
+                return;
+            }
+
             TryInteract();
         }
     }
@@ -23,11 +34,20 @@ public class PlayerInteraction : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit hit, interactionDistance))
         {
             Interactable interactable =
-                hit.collider.GetComponent<Interactable>();
+                hit.collider.GetComponentInParent<Interactable>();
 
-            if (interactable != null)
+            if (interactable == null)
+                return;
+
+            interactable.Interact();
+
+            // War das ein Pickup-Objekt?
+            PickupInteractable pickup =
+                interactable as PickupInteractable;
+
+            if (pickup != null && pickup.IsHeld)
             {
-                interactable.Interact();
+                heldObject = pickup;
             }
         }
     }

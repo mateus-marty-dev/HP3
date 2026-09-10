@@ -4,16 +4,27 @@ public class PickupInteractable : Interactable
 {
     [SerializeField] private Transform holdPoint;
 
-    [Header("Collision Ignore While Held")]
-    [SerializeField] private Collider bucketCollider;
+    [Header("Hold Offset")]
+    [SerializeField] private Vector3 holdPositionOffset;
+    [SerializeField] private Vector3 holdRotationOffset;
+
+    [Header("Player")]
     [SerializeField] private Collider playerCollider;
 
     private Rigidbody rb;
+    private Collider[] objectColliders;
+
     private bool isHeld = false;
+
+    public bool IsHeld => isHeld;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+
+        objectColliders = GetComponentsInChildren<Collider>();
+
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
     }
 
     private void FixedUpdate()
@@ -21,8 +32,15 @@ public class PickupInteractable : Interactable
         if (!isHeld)
             return;
 
-        rb.MovePosition(holdPoint.position);
-        rb.MoveRotation(holdPoint.rotation);
+        Vector3 targetPosition =
+            holdPoint.TransformPoint(holdPositionOffset);
+
+        Quaternion targetRotation =
+            holdPoint.rotation *
+            Quaternion.Euler(holdRotationOffset);
+
+        rb.MovePosition(targetPosition);
+        rb.MoveRotation(targetRotation);
     }
 
     public override void Interact()
@@ -40,7 +58,7 @@ public class PickupInteractable : Interactable
         rb.useGravity = false;
         rb.isKinematic = true;
 
-        Physics.IgnoreCollision(bucketCollider, playerCollider, true);
+        IgnorePlayerCollision(true);
     }
 
     private void Drop()
@@ -50,6 +68,24 @@ public class PickupInteractable : Interactable
         rb.isKinematic = false;
         rb.useGravity = true;
 
-        Physics.IgnoreCollision(bucketCollider, playerCollider, false);
+        IgnorePlayerCollision(false);
+    }
+
+    private void IgnorePlayerCollision(bool ignore)
+    {
+        if (playerCollider == null)
+            return;
+
+        foreach (Collider col in objectColliders)
+        {
+            if (col != null)
+            {
+                Physics.IgnoreCollision(
+                    col,
+                    playerCollider,
+                    ignore
+                );
+            }
+        }
     }
 }
