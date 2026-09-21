@@ -1,5 +1,38 @@
 # Gartenprototyp einrichten
 
+## Kartoffelknollen ernten
+
+- In der letzten Kartoffelstufe sind die fuenf Knollen `Potato`, `Potato.001`, `Potato.002`, `Potato.003` und `Potato.005` als einzelne `Harvest Fruits` eingetragen.
+- Die importierten Kartoffelmeshes enthielten jeweils eine duenne Wurzel. In `PotatoHarvest` liegen getrennte Knollen- und Wurzelmeshes. Die Wurzeln bleiben als eigene Geschwisterobjekte an der letzten Wachstumsstufe; nur die Knollen erhalten `PickupInteractable`.
+- Nach der Reife eine Knolle anvisieren und E druecken, nochmals E zum Ablegen. Pflanze, Wurzeln und Beeren bleiben stehen. Halteposition, Nahbereichserkennung und Kuebeltransport verwenden das vorhandene Aufnahmesystem.
+
+## Karotte ernten
+
+- In `SampleScene` ist `Carrot_Stage_3` als Ganzes unter `Harvest Fruits` der Karotte eingetragen. Wurzel und alle sechs Blattobjekte werden gemeinsam getragen.
+- Erst in der letzten Wachstumsstufe entstehen die Aufnahme-Collider. Mit leeren Haenden auf das Gruen oder die sichtbare Wurzel zielen und E druecken. Nochmals E legt die Karotte ab; danach ist sie erneut aufnehmbar.
+- Die Halteposition entspricht den Tomaten. Es gibt derzeit kein Nachwachsen nach der Ernte.
+- Die Zielsuche erfasst auch Collider direkt an oder um die Kamera, damit man beim Ernten aus naechster Naehe nicht zuruecktreten muss.
+- Die vorhandenen Wachstumszeiten bleiben bestehen: 50 feuchte Sekunden Keimzeit und 360 feuchte Sekunden pro Stufe, insgesamt etwa 18 Minuten 50 Sekunden bis Stage 3 bei durchgehend feuchtem Boden.
+- Manueller Test: Vor Reife keine Aufnahme; nach Reife am Gruen aufnehmen, vollstaendige Karotte in der Hand pruefen, ablegen und erneut aufnehmen.
+
+## Tomaten pfluecken
+
+- In `SampleScene` sind alle fuenf roten Fruechte der letzten Tomatenstufe als `Harvest Fruits` am `PlantGrowth` eingetragen: `Ripe_Tomato`, `Ripe_Tomato.004`, `Leaf.080`, `Leaf.085` und `Leaf.088`. Die drei Leaf-Objekte sind trotz ihres Namens Fruechte mit dem Material `Tomato_Ripe`. `Harvest Hold Point` und `Harvest Player Collider` verwenden dieselben Referenzen wie die vorhandenen aufnehmbaren Gegenstaende.
+- Erst bei vollstaendigem Wachstum erhalten diese Fruechte einen Collider, einen zunaechst unbeweglichen Rigidbody und `PickupInteractable`.
+- Mit leeren Haenden aus maximal 3 Metern auf eine rote Tomate zielen und E druecken: Nur diese Frucht loest sich und wird getragen. Noch einmal E legt sie mit Schwerkraft ab; sie kann erneut aufgehoben werden.
+- `PlayerInteraction` erlaubt mit `Pickup Aim Radius` (0.15 Meter) leichtes Danebenzielen. Sichtbare Fruechte haben dabei Vorrang vor dem Giessen des Beets dahinter. Waende, Boden und die Reichweite bleiben beruecksichtigt; mit Radius 0 gilt wieder nur der direkte Strahl.
+- `Harvest Hold Position Offset` am `PlantGrowth` verschiebt nur die getragenen Fruechte: Standard (0, 0.65, 0.35) relativ zum Hold Point. Damit liegen sie in dieser Szene etwa 1.37 Meter vor der Kamera, leicht unter der Bildmitte. Die sichtbare Mesh-Mitte wird ausgerichtet, auch wenn der importierte Pivot an der Pflanzenwurzel liegt.
+- Die Pflanze und die uebrigen Fruechte bleiben stehen. Gepflueckte Fruechte wachsen derzeit nicht nach.
+- Manueller Test: Vor Reife ist keine Frucht pflueckbar. Nach Reife alle fuenf Fruechte nacheinander pfluecken und ablegen, eine abgelegte Frucht erneut aufnehmen. Alle sollen an derselben sichtbaren Halteposition erscheinen. Auch das Aufheben und Ablegen des bestehenden Kuebels pruefen.
+
+## Tomaten im Kuebel transportieren
+
+- `RainCollector` richtet `BucketContents` automatisch anhand der Wasserflaechen am Boden und am Rand ein. Es muss nichts zusaetzlich an der Szene zugewiesen werden.
+- Beim Aufheben werden lose Pickup-Objekte innerhalb dieses Innenraums voruebergehend unbeweglich und mit dem Kuebel mitgefuehrt. Ihre sichtbare Collider-Mitte entscheidet, ob sie innen liegen; ein versetzter Modell-Pivot spielt keine Rolle.
+- Beim Ablegen werden Schwerkraft, Kollisionsmodus und Spieler-Kollisionen wiederhergestellt. Beim Kippen ab dem bestehenden `Pour Angle` werden die Fruechte ebenfalls freigegeben und koennen herausfallen.
+- Die Tomaten bleiben eigenstaendige Objekte und werden weder geloescht noch dem Wasserobjekt untergeordnet. Kontinuierliche spekulative Kollisionserkennung verbessert ihre Kollisionen mit duennen Kuebelwaenden.
+- Test: Mehrere Tomaten hineinlegen, Kuebel mehrfach aufnehmen, bewegen und ablegen. Danach kippen und die herausgefallenen Tomaten einzeln wieder aufnehmen. Gegenstaende neben dem Kuebel duerfen nicht mitgenommen werden.
+
 1. Die aktuelle Szene in Unity speichern.
 2. `GardenBed` auf das Beet setzen. Das Beet braucht einen Collider auf demselben Objekt oder einem Kind, damit der vorhandene Spieler-Raycasts es mit E erreicht.
 3. Pro Karotte ein leeres, aktives Elternobjekt `Carrot` anlegen und dort `PlantGrowth` hinzufuegen.

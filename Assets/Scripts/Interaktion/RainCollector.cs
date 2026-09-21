@@ -30,6 +30,13 @@ public class RainCollector : MonoBehaviour
 
     private float rainTimer = 0f;
 
+    private void Awake()
+    {
+        BucketContents contents = GetComponent<BucketContents>();
+        if (contents == null) contents = gameObject.AddComponent<BucketContents>();
+        contents.Configure(water, waterTop, pourAngle);
+    }
+
     private void Start()
     {
         startLocalPosition = water.localPosition;
