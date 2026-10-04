@@ -144,4 +144,15 @@ public class WeatherManager : MonoBehaviour
             rainIndoor.Play();
         }
     }
+    public void SetWeather(WeatherType newWeather)
+    {
+        if (currentWeather == newWeather)
+            return;
+
+        currentWeather = newWeather;
+        ApplyWeather();
+
+    }
+
+
 }
