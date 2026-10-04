@@ -16,30 +16,31 @@ public class PickupInteractable : Interactable
 
     private bool isHeld = false;
     private bool detachOnPickup;
-    private Vector3 heldVisualCenter;
 
-    public bool IsHeld => isHeld;
+    private Vector3 heldVisualCenter;
 
     private Quaternion actionRotation = Quaternion.identity;
 
-    public void SetActionRotation(Quaternion rotation)
-    {
-        actionRotation = rotation;
-    }
-
+    public bool IsHeld => isHeld;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
 
-        // Alle Collider dieses Objekts und seiner Children.
-        // Beim Hammer z.B. Kopf + Griff.
-        objectColliders = GetComponentsInChildren<Collider>();
+        objectColliders =
+            GetComponentsInChildren<Collider>();
 
         if (rb != null)
-            rb.interpolation = RigidbodyInterpolation.Interpolate;
+        {
+            rb.interpolation =
+                RigidbodyInterpolation.Interpolate;
+        }
     }
 
+    public void SetActionRotation(Quaternion rotation)
+    {
+        actionRotation = rotation;
+    }
 
     public void ConfigureHarvest(
         Transform targetHoldPoint,
@@ -49,6 +50,7 @@ public class PickupInteractable : Interactable
     {
         holdPoint = targetHoldPoint;
         playerCollider = targetPlayerCollider;
+
         holdPositionOffset = positionOffset;
         heldVisualCenter = visualCenter;
 
@@ -57,29 +59,26 @@ public class PickupInteractable : Interactable
         interactionText = "E - Pfluecken";
     }
 
-
     private void FixedUpdate()
     {
         if (!isHeld)
             return;
 
-        if (holdPoint == null || rb == null)
+        if (rb == null || holdPoint == null)
             return;
 
-
         Vector3 targetPosition =
-            holdPoint.TransformPoint(holdPositionOffset);
-
+            holdPoint.TransformPoint(
+                holdPositionOffset
+            );
 
         Quaternion targetRotation =
-     holdPoint.rotation *
-     Quaternion.Euler(holdRotationOffset) *
-     actionRotation;
+            holdPoint.rotation *
+            Quaternion.Euler(
+                holdRotationOffset
+            ) *
+            actionRotation;
 
-
-        // Wichtig für importierte Früchte:
-        // Der sichtbare Mittelpunkt wird am HoldPoint gehalten,
-        // auch wenn der Pivot ungünstig liegt.
         targetPosition -=
             targetRotation *
             Vector3.Scale(
@@ -87,103 +86,110 @@ public class PickupInteractable : Interactable
                 transform.lossyScale
             );
 
+        rb.MovePosition(
+            targetPosition
+        );
 
-        rb.MovePosition(targetPosition);
-        rb.MoveRotation(targetRotation);
+        rb.MoveRotation(
+            targetRotation
+        );
 
-
-        // Falls dieses Objekt ein Kübel ist.
-        GetComponent<BucketContents>()?
-            .MoveContents(targetPosition, targetRotation);
+        GetComponent<BucketContents>()
+            ?.MoveContents(
+                targetPosition,
+                targetRotation
+            );
     }
-
 
     public override void Interact()
     {
         if (!isHeld)
+        {
             PickUp();
+        }
         else
+        {
             Drop();
+        }
     }
-
 
     private void PickUp()
     {
         if (rb == null || holdPoint == null)
             return;
 
-
-        // Wird für geerntetes Gemüse verwendet.
         if (detachOnPickup)
         {
-            transform.SetParent(null, true);
+            transform.SetParent(
+                null,
+                true
+            );
 
             holdRotationOffset =
                 (
-                    Quaternion.Inverse(holdPoint.rotation) *
+                    Quaternion.Inverse(
+                        holdPoint.rotation
+                    ) *
                     transform.rotation
                 ).eulerAngles;
 
             detachOnPickup = false;
 
-            interactionText = "E - Aufheben";
+            interactionText =
+                "E - Aufheben";
         }
-
 
         isHeld = true;
 
+        GetComponent<BucketContents>()
+            ?.BeginCarry(
+                playerCollider
+            );
 
-        // Falls es ein Kübel ist.
-        GetComponent<BucketContents>()?
-            .BeginCarry(playerCollider);
+        rb.linearVelocity =
+            Vector3.zero;
 
+        rb.angularVelocity =
+            Vector3.zero;
 
-        // Physik während des Tragens deaktivieren.
         rb.useGravity = false;
         rb.isKinematic = true;
 
-
-        // Kollision zwischen getragenem Objekt
-        // und Player deaktivieren.
         IgnorePlayerCollision(true);
     }
-
 
     private void Drop()
     {
         isHeld = false;
 
+        actionRotation =
+            Quaternion.identity;
 
-        GetComponent<BucketContents>()?
-            .ReleaseContents();
-
+        GetComponent<BucketContents>()
+            ?.ReleaseContents();
 
         rb.isKinematic = false;
         rb.useGravity = true;
 
-
-        // Nach dem Ablegen wieder mit Player kollidieren.
         IgnorePlayerCollision(false);
     }
 
-
-    private void IgnorePlayerCollision(bool ignore)
+    private void IgnorePlayerCollision(
+        bool ignore)
     {
         if (playerCollider == null)
             return;
 
-
         foreach (Collider col in objectColliders)
         {
-            if (col == null)
-                continue;
-
-
-            Physics.IgnoreCollision(
-                col,
-                playerCollider,
-                ignore
-            );
+            if (col != null)
+            {
+                Physics.IgnoreCollision(
+                    col,
+                    playerCollider,
+                    ignore
+                );
+            }
         }
     }
 }

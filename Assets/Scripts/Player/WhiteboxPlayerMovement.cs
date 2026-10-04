@@ -10,6 +10,10 @@ public class WhiteboxPlayerMovement : MonoBehaviour
     [SerializeField] private Transform playerCamera;
     [SerializeField] private float mouseSensitivity = 2f;
 
+    [Header("Character Animation")]
+    [SerializeField] private Animator characterAnimator;
+    private static readonly int IsWalking = Animator.StringToHash("IsWalking");
+
     private CharacterController controller;
     private Vector3 velocity;
 
@@ -18,6 +22,8 @@ public class WhiteboxPlayerMovement : MonoBehaviour
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
+        if (characterAnimator == null)
+            characterAnimator = GetComponentInChildren<Animator>();
 
         // Maus im Game-Fenster sperren
         Cursor.lockState = CursorLockMode.Locked;
@@ -41,7 +47,13 @@ public class WhiteboxPlayerMovement : MonoBehaviour
 
         move = Vector3.ClampMagnitude(move, 1f);
 
+        Vector3 beforeMove = transform.position;
         controller.Move(move * moveSpeed * Time.deltaTime);
+        Vector3 displacement = transform.position - beforeMove;
+        displacement.y = 0f;
+        if (characterAnimator != null)
+            characterAnimator.SetBool(IsWalking,
+                move.sqrMagnitude > 0.001f && displacement.sqrMagnitude > 0.00000001f);
 
         // Gravity
         if (controller.isGrounded && velocity.y < 0f)
