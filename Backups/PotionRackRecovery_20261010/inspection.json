@@ -1,0 +1,227 @@
+[
+  {
+    "file": "D:\\GameDesign\\Hotzenplotz\\Unity\\HP_3\\Backups\\PotionRackRecovery_20261010\\33652_autosave.blend1",
+    "objects": [
+      {
+        "name": "Cube",
+        "type": "MESH",
+        "vertices": 816
+      },
+      {
+        "name": "Cube.001",
+        "type": "MESH",
+        "vertices": 8
+      },
+      {
+        "name": "Cube.002",
+        "type": "MESH",
+        "vertices": 8
+      },
+      {
+        "name": "Cube.003",
+        "type": "MESH",
+        "vertices": 8
+      },
+      {
+        "name": "Cube.004",
+        "type": "MESH",
+        "vertices": 8
+      },
+      {
+        "name": "Cube.005",
+        "type": "MESH",
+        "vertices": 8
+      }
+    ]
+  },
+  {
+    "file": "D:\\GameDesign\\Hotzenplotz\\Unity\\HP_3\\Backups\\PotionRackRecovery_20261010\\33652_autosave_33652_autosave.blend",
+    "objects": [
+      {
+        "name": "Cube",
+        "type": "MESH",
+        "vertices": 816
+      },
+      {
+        "name": "Cube.001",
+        "type": "MESH",
+        "vertices": 8
+      },
+      {
+        "name": "Cube.002",
+        "type": "MESH",
+        "vertices": 8
+      },
+      {
+        "name": "Cube.003",
+        "type": "MESH",
+        "vertices": 8
+      },
+      {
+        "name": "Cube.004",
+        "type": "MESH",
+        "vertices": 8
+      },
+      {
+        "name": "Cube.005",
+        "type": "MESH",
+        "vertices": 8
+      }
+    ]
+  },
+  {
+    "file": "D:\\GameDesign\\Hotzenplotz\\Unity\\HP_3\\Backups\\PotionRackRecovery_20261010\\quit.blend",
+    "objects": [
+      {
+        "name": "Camera",
+        "type": "CAMERA",
+        "vertices": 0
+      },
+      {
+        "name": "Cube",
+        "type": "MESH",
+        "vertices": 8
+      },
+      {
+        "name": "Light",
+        "type": "LIGHT",
+        "vertices": 0
+      }
+    ]
+  },
+  {
+    "file": "D:\\GameDesign\\Hotzenplotz\\Unity\\HP_3\\Backups\\PotionRackRecovery_20261010\\Schloss_30244_autosave.blend",
+    "objects": [
+      {
+        "name": "Camera",
+        "type": "CAMERA",
+        "vertices": 0
+      },
+      {
+        "name": "Circle",
+        "type": "MESH",
+        "vertices": 32
+      },
+      {
+        "name": "Cube",
+        "type": "MESH",
+        "vertices": 8
+      },
+      {
+        "name": "Cube.002",
+        "type": "MESH",
+        "vertices": 40
+      },
+      {
+        "name": "Cube.003",
+        "type": "MESH",
+        "vertices": 412
+      },
+      {
+        "name": "Cube.004",
+        "type": "MESH",
+        "vertices": 40
+      },
+      {
+        "name": "Cylinder",
+        "type": "MESH",
+        "vertices": 0
+      },
+      {
+        "name": "Cylinder.001",
+        "type": "MESH",
+        "vertices": 462
+      },
+      {
+        "name": "Cylinder.002",
+        "type": "MESH",
+        "vertices": 64
+      },
+      {
+        "name": "Cylinder.003",
+        "type": "MESH",
+        "vertices": 64
+      },
+      {
+        "name": "Light",
+        "type": "LIGHT",
+        "vertices": 0
+      },
+      {
+        "name": "Plane",
+        "type": "MESH",
+        "vertices": 15
+      },
+      {
+        "name": "Plane.001",
+        "type": "MESH",
+        "vertices": 96
+      },
+      {
+        "name": "Plane.002",
+        "type": "MESH",
+        "vertices": 3562
+      },
+      {
+        "name": "Plane.003",
+        "type": "MESH",
+        "vertices": 75
+      },
+      {
+        "name": "Plane.004",
+        "type": "MESH",
+        "vertices": 32
+      },
+      {
+        "name": "Plane.005",
+        "type": "MESH",
+        "vertices": 388
+      },
+      {
+        "name": "Plane.006",
+        "type": "MESH",
+        "vertices": 40
+      },
+      {
+        "name": "Sphere",
+        "type": "MESH",
+        "vertices": 482
+      },
+      {
+        "name": "Sphere.001",
+        "type": "MESH",
+        "vertices": 562
+      }
+    ]
+  },
+  {
+    "file": "D:\\GameDesign\\Hotzenplotz\\Unity\\HP_3\\BlenderSource\\Environment\\Castle\\Magic_Portion_Pan.blend",
+    "objects": [
+      {
+        "name": "Sphere.002",
+        "type": "MESH",
+        "vertices": 626
+      },
+      {
+        "name": "Sphere.003",
+        "type": "MESH",
+        "vertices": 32
+      }
+    ]
+  },
+  {
+    "file": "D:\\GameDesign\\Hotzenplotz\\Unity\\HP_3\\BlenderSource\\Environment\\Castle\\Magic_Portion_Pan.blend1",
+    "objects": [
+      {
+        "name": "Sphere.002",
+        "type": "MESH",
+        "vertices": 626
+      },
+      {
+        "name": "Sphere.003",
+        "type": "MESH",
+        "vertices": 32
+      }
+    ]
+  }
+]
