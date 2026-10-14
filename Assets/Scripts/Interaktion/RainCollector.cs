@@ -27,20 +27,45 @@ public class RainCollector : MonoBehaviour
 
     private Vector3 startLocalPosition;
     private Vector3 startLocalScale;
+    private Vector3 localContainerUp = Vector3.up;
 
     private float rainTimer = 0f;
+    public bool HasWater => fillLevel > 0.001f;
+    public Renderer WaterSurfaceRenderer => water != null ? water.GetComponent<Renderer>() : null;
 
     private void Awake()
     {
+        // Imported vessels may have a rotated root. Cache their actual filling
+        // axis before UpdateWater moves the lower surface toward the rim.
+        if (water != null && waterTop != null)
+        {
+            Vector3 fillingAxis = SurfaceCenter(waterTop) - SurfaceCenter(water);
+            if (fillingAxis.sqrMagnitude > 0.000001f)
+                localContainerUp = transform.InverseTransformVector(fillingAxis).normalized;
+        }
         BucketContents contents = GetComponent<BucketContents>();
         if (contents == null) contents = gameObject.AddComponent<BucketContents>();
         contents.Configure(water, waterTop, pourAngle);
     }
 
+    private static Vector3 SurfaceCenter(Transform surface)
+    {
+        MeshFilter mesh = surface.GetComponent<MeshFilter>();
+        return mesh != null && mesh.sharedMesh != null
+            ? surface.TransformPoint(mesh.sharedMesh.bounds.center)
+            : surface.position;
+    }
+
     private void Start()
     {
+        if (water == null || waterTop == null)
+        {
+            Debug.LogWarning("RainCollector needs Water and Water Top assigned.", this);
+            enabled = false;
+            return;
+        }
         startLocalPosition = water.localPosition;
-        startLocalScale = water.localScale;
+        startLocalScale = NonZeroScale(water.localScale);
 
         water.gameObject.SetActive(fillLevel > 0f);
     }
@@ -54,7 +79,9 @@ public class RainCollector : MonoBehaviour
 
     private void FillFromRain()
     {
-        if (weatherManager.currentWeather == WeatherManager.WeatherType.Rainy)
+        if (weatherManager != null
+            && (weatherManager.currentWeather == WeatherManager.WeatherType.Rainy
+                || weatherManager.currentWeather == WeatherManager.WeatherType.Stormy))
         {
             rainTimer += Time.deltaTime;
 
@@ -75,7 +102,7 @@ public class RainCollector : MonoBehaviour
         if (fillLevel <= 0f)
             return;
 
-        float angle = Vector3.Angle(transform.up, Vector3.up);
+        float angle = Vector3.Angle(transform.TransformVector(localContainerUp), Vector3.up);
 
         if (angle >= pourAngle)
         {
@@ -131,8 +158,16 @@ public class RainCollector : MonoBehaviour
 
         water.localScale = Vector3.Lerp(
             startLocalScale,
-            waterTop.localScale,
+            NonZeroScale(waterTop.localScale),
             fillLevel
         );
+    }
+
+    private static Vector3 NonZeroScale(Vector3 scale)
+    {
+        // A flattened mesh still needs an invertible transform for correct lighting.
+        for (int axis = 0; axis < 3; axis++)
+            if (Mathf.Abs(scale[axis]) < 0.000001f) scale[axis] = 0.000001f;
+        return scale;
     }
 }
