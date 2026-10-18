@@ -5,6 +5,9 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private Camera playerCamera;
     [SerializeField] private float interactionDistance = 3f;
     [Min(0f)] [SerializeField] private float pickupAimRadius = 0.15f;
+    [Header("Lighting the stove")]
+    [Min(0.1f)] [SerializeField] private float stoveInteractionDistance = 5f;
+    [Min(0f)] [SerializeField] private float stoveAimRadius = 0.5f;
 
     private PickupInteractable heldObject;
 
@@ -22,11 +25,15 @@ public class PlayerInteraction : MonoBehaviour
 
     private void TryInteract()
     {
+        if (playerCamera == null) return;
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
         Interactable interactable = null;
         if (Physics.Raycast(ray, out RaycastHit hit, interactionDistance,
                 Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
             interactable = hit.collider.GetComponentInParent<Interactable>();
+
+        if (interactable == null)
+            interactable = FindNearbyStove(ray);
 
         // Prefer nearby visible fruit over watering the soil behind it.
         // Other interactions, such as doors, keep their direct targeting.
@@ -37,6 +44,45 @@ public class PlayerInteraction : MonoBehaviour
         interactable.Interact();
         PickupInteractable pickup = interactable as PickupInteractable;
         if (pickup != null && pickup.IsHeld) heldObject = pickup;
+    }
+
+    private StoveFireInteractable FindNearbyStove(Ray ray)
+    {
+        if (stoveAimRadius <= 0f) return null;
+        StoveFireInteractable closest = null;
+        float closestDistance = float.PositiveInfinity;
+
+        foreach (Collider candidate in Physics.OverlapSphere(ray.origin, stoveAimRadius,
+                     Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+            Consider(candidate);
+
+        foreach (RaycastHit candidate in Physics.SphereCastAll(ray, stoveAimRadius,
+                     stoveInteractionDistance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+            Consider(candidate.collider);
+        return closest;
+
+        void Consider(Collider candidate)
+        {
+            StoveFireInteractable stove = candidate.GetComponentInParent<StoveFireInteractable>();
+            if (stove == null || !stove.isActiveAndEnabled || stove.IsBurning) return;
+            if (Vector3.Distance(ray.origin, candidate.ClosestPoint(ray.origin)) > stoveInteractionDistance)
+                return;
+
+            Vector3 direction = candidate.bounds.center - ray.origin;
+            float distance = direction.magnitude;
+            if (distance >= closestDistance || Vector3.Dot(direction, ray.direction) < 0f) return;
+
+            // Check the actual wood, so the wider aim cannot ignite a stove through walls.
+            foreach (RaycastHit obstruction in Physics.RaycastAll(ray.origin, direction.normalized,
+                         distance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+            {
+                if (obstruction.collider.transform.IsChildOf(transform)) continue;
+                if (obstruction.collider.GetComponentInParent<StoveFireInteractable>() == stove) continue;
+                return;
+            }
+            closest = stove;
+            closestDistance = distance;
+        }
     }
 
     private PickupInteractable FindNearbyPickup(Ray ray)
