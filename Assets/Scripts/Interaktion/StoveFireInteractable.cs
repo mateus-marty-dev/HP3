@@ -9,6 +9,10 @@ public class StoveFireInteractable : Interactable
     [Min(1f)] [SerializeField] private float fullFlameMultiplier = 2.5f;
     [Min(0f)] [SerializeField] private float initialLightIntensity = 0.3f;
     [Min(0f)] [SerializeField] private float fullLightIntensity = 1.2f;
+    [Header("Fire sound")]
+    [SerializeField] private AudioSource fireAudio;
+    [Range(0f, 1f)] [SerializeField] private float initialFireVolume = 0.15f;
+    [Range(0f, 1f)] [SerializeField] private float fullFireVolume = 0.65f;
     [Header("Wood charring")]
     [SerializeField] private MeshRenderer[] woodRenderers;
     [Min(0f)] [SerializeField] private float charringDelay = 10f;
@@ -33,6 +37,14 @@ public class StoveFireInteractable : Interactable
             flame.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
         if (fireLight != null) fireLight.intensity = 0f;
+        if (fireAudio == null) fireAudio = GetComponent<AudioSource>();
+        if (fireAudio != null)
+        {
+            fireAudio.playOnAwake = false;
+            fireAudio.loop = true;
+            fireAudio.Stop();
+            fireAudio.volume = 0f;
+        }
         if (woodRenderers != null)
         {
             var seen = new HashSet<MeshRenderer>();
@@ -70,6 +82,11 @@ public class StoveFireInteractable : Interactable
             fireLight.intensity = initialLightIntensity;
         }
         flame.Play(true);
+        if (fireAudio != null && fireAudio.clip != null)
+        {
+            fireAudio.volume = initialFireVolume;
+            fireAudio.Play();
+        }
         interactionText = "Ofen brennt";
     }
 
@@ -84,6 +101,8 @@ public class StoveFireInteractable : Interactable
                 * Mathf.Lerp(1f, fullFlameMultiplier, growth);
         if (fireLight != null)
             fireLight.intensity = Mathf.Lerp(initialLightIntensity, fullLightIntensity, growth);
+        if (fireAudio != null)
+            fireAudio.volume = Mathf.Lerp(initialFireVolume, fullFireVolume, growth);
         float charProgress = Mathf.Clamp01((elapsed - charringDelay)
             / Mathf.Max(0.1f, charringDuration));
         for (int i = 0; i < woodMaterials.Count; i++)
@@ -93,6 +112,16 @@ public class StoveFireInteractable : Interactable
             woodMaterials[i].SetColor(colorProperties[i],
                 Color.Lerp(originalColors[i], target, charProgress));
         }
+    }
+
+    private void OnDisable()
+    {
+        if (fireAudio != null) fireAudio.Stop();
+    }
+
+    private void OnEnable()
+    {
+        if (burning && fireAudio != null && fireAudio.clip != null) fireAudio.Play();
     }
 
     private void OnDestroy()
