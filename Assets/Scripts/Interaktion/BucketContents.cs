@@ -4,6 +4,76 @@ using UnityEngine;
 /// <summary>Stabilizes loose pickups inside a carried bucket, releasing them on drop or tilt.</summary>
 public class BucketContents : MonoBehaviour
 {
+    [SerializeField] private bool supportDynamicContents;
+    [SerializeField] private BoxCollider transportFloor;
+    [SerializeField] private bool rectangularContents;
+    private readonly HashSet<Rigidbody> movedBodies = new HashSet<Rigidbody>();
+    private readonly List<CarriedItem> dynamicContacts = new List<CarriedItem>();
+
+    private void ProtectFromPlayer(Rigidbody body)
+    {
+        if (player == null || dynamicContacts.Exists(item => item.body == body)) return;
+        Collider[] colliders = body.GetComponentsInChildren<Collider>();
+        bool[] ignored = new bool[colliders.Length];
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            ignored[i] = Physics.GetIgnoreCollision(colliders[i], player);
+            Physics.IgnoreCollision(colliders[i], player, true);
+        }
+        dynamicContacts.Add(new CarriedItem { body = body, colliders = colliders, ignoredPlayer = ignored });
+    }
+
+    private void FixedUpdate()
+    {
+        if (dynamicContacts.Count == 0) return;
+        bool held = GetComponent<PickupInteractable>()?.IsHeld == true;
+        for (int index = dynamicContacts.Count - 1; index >= 0; index--)
+        {
+            CarriedItem item = dynamicContacts[index];
+            if (held && item.body != null && movedBodies.Contains(item.body)) continue;
+            bool overlaps = false;
+            if (player != null && player.enabled)
+                foreach (Collider col in item.colliders)
+                    if (col != null && col.enabled && !col.isTrigger &&
+                        Physics.ComputePenetration(col, col.transform.position, col.transform.rotation,
+                            player, player.transform.position, player.transform.rotation, out _, out _))
+                    { overlaps = true; break; }
+            if (overlaps) continue;
+            RestoreDynamicContact(item);
+            dynamicContacts.RemoveAt(index);
+        }
+    }
+
+    private void RestoreDynamicContact(CarriedItem item)
+    {
+        for (int i = 0; i < item.colliders.Length; i++)
+            if (player != null && item.colliders[i] != null)
+                Physics.IgnoreCollision(item.colliders[i], player, item.ignoredPlayer[i]);
+    }
+
+    private BucketCarryPhysics transport;
+    public bool TryMoveDynamicContents(Rigidbody vessel, Vector3 position, Quaternion rotation)
+    {
+        if (!supportDynamicContents) return false;
+        if (transport == null)
+        {
+            transport = GetComponent<BucketCarryPhysics>();
+            if (transport == null) transport = gameObject.AddComponent<BucketCarryPhysics>();
+            transport.ConfigureFloor(transportFloor, rectangularContents);
+        }
+        if (!transport.Move(position, rotation)) return false;
+        movedBodies.Clear();
+        foreach (var body in transport.Contents)
+        {
+            movedBodies.Add(body);
+            ProtectFromPlayer(body);
+        }
+        return true;
+    }
+    public void RenderCarry(Vector3 position, Quaternion rotation)
+    {
+        if (transport != null) transport.RenderAt(position, rotation);
+    }
     private struct CarriedItem
     {
         public Rigidbody body;
@@ -66,6 +136,10 @@ public class BucketContents : MonoBehaviour
 
     private void CaptureContents()
     {
+        if (supportDynamicContents) return;
+        // Tuned vessels retain fully dynamic contents, including while carried.
+        GentleItemPhysics tuning = GetComponent<GentleItemPhysics>();
+        if (tuning != null && tuning.IsVessel) return;
         if (!configured || !Upright(transform.rotation)) return;
         Vector3 scale = transform.lossyScale;
         float maxScale = Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z));
@@ -121,6 +195,8 @@ public class BucketContents : MonoBehaviour
 
     public void ReleaseContents()
     {
+        if (transport != null) transport.Release();
+        movedBodies.Clear();
         foreach (CarriedItem item in items)
         {
             if (item.body == null) continue;
@@ -137,5 +213,11 @@ public class BucketContents : MonoBehaviour
         items.Clear();
     }
 
-    private void OnDisable() { ReleaseContents(); }
+    private void OnDisable()
+    {
+        ReleaseContents();
+        foreach (CarriedItem item in dynamicContacts) RestoreDynamicContact(item);
+        dynamicContacts.Clear();
+        movedBodies.Clear();
+    }
 }
