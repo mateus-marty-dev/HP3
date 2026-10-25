@@ -50,21 +50,27 @@ Diese Punkte sind nächste Prüfschritte und werden hier nicht als umgesetzt dar
 
 ## Screenshots und Nachweise
 
-Die Bilder aus dem vorausgehenden Gespräch wurden hier nicht übernommen. Es sind noch keine Screenshots in dieser Dokumentation eingebunden.
+Die folgenden drei Original-Screenshots zeigen die fünf Ufersteine in Blender am 25.10.2026. Sie dokumentieren die Formenfamilie mit facettierter Oberfläche sowie die Silhouetten- und Grössenvariation.
 
-Vorgesehener Ablageort: `../Screenshots/2026-10-25-ufersteine/`
+### Gesamtansicht der Steinfamilie
 
-- [ ] Gesamtansicht aller fünf Steine in Blender: `01-steinfamilie.png`
-- [ ] Shade-Flat-/Shade-Smooth-Vergleich bei gleicher Ansicht und Beleuchtung: `02-shading-vergleich.png`
-- [ ] Ansicht zur Silhouetten- und Grössenvariation: `03-silhouetten.png`
+![Fünf modulare Low-Poly-Ufersteine in der Blender-Perspektivansicht](../Screenshots/2026-10-25-ufersteine/01-steinfamilie.png)
 
-Erst nach dem Hochladen relative Bildlinks ergänzen, zum Beispiel:
+*Perspektivische Übersicht: kleiner Kiesel, grosser Akzentstein, flacher Plattenstein und zwei kompaktere Formen. Unterschiedliche Höhen und Proportionen sind direkt vergleichbar. Original: Screenshot 2026-10-25 204125.png.*
 
-```markdown
-![Fünf modulare Ufersteine in Blender](../Screenshots/2026-10-25-ufersteine/01-steinfamilie.png)
-```
+### Draufsicht – Grundformen und Grössenvariation
 
-Ein späterer Unity-Screenshot gehört zur tatsächlich durchgeführten Integrationssession.
+![Draufsicht auf die fünf Ufersteine in Blender](../Screenshots/2026-10-25-ufersteine/02-draufsicht.png)
+
+*Die Draufsicht zeigt unterschiedlich breite, rundliche und unregelmässige Grundformen sowie die Grössenstaffelung innerhalb der Bibliothek. Original: Screenshot 2026-10-25 205218.png.*
+
+### Frontansicht – Höhen und Silhouetten
+
+![Frontansicht der fünf Ufersteine mit unterschiedlichen Höhen und Silhouetten](../Screenshots/2026-10-25-ufersteine/03-frontansicht.png)
+
+*Die Frontansicht macht den Höhenkontrast zwischen Kiesel, Akzentstein und flacheren Uferformen sichtbar. Die einzelnen Flächen unterstützen die gewählte Low-Poly-Formensprache. Original: Screenshot 2026-10-25 205214.png.*
+
+Die Bilder zeigen Blender-Zwischenstände. Ein direkter Shade-Flat-/Shade-Smooth-Vergleich ist darin nicht enthalten und kann bei Bedarf als zusätzlicher Beleg ergänzt werden. Ein späterer Unity-Screenshot gehört zur tatsächlich durchgeführten Integrationssession.
 
 ## Session_E – Zwischenstand, Abschluss noch offen
 
@@ -77,7 +83,7 @@ Ein späterer Unity-Screenshot gehört zur tatsächlich durchgeführten Integrat
 Der aktuelle Nachweis betrifft die Asset-Entwicklung in Blender. Eine erfolgreiche Unity-Integration oder ein bereits verbesserter Übergang zwischen Teich und Wiese wird nicht behauptet. Die Wirkung im Spiel ist noch zu prüfen. Die Session ist noch nicht abschliessend ausgewertet.
 
 ### Nächste Schritte
-- [ ] Screenshot-Belege ergänzen.
+- [x] Drei Screenshot-Belege aus Blender ergänzen.
 - [ ] Formenfamilie und mögliche Korrekturen abschliessend prüfen.
 - [ ] Export und Import in Unity in einer späteren Session durchführen und dokumentieren.
 - [ ] Gruppierung, Massstab und Wirkung an Teich und Wiese im Spiel beurteilen.
@@ -89,6 +95,6 @@ Der aktuelle Nachweis betrifft die Asset-Entwicklung in Blender. Eine erfolgreic
 > Für HP.3 entwickelte ich in Blender eine kleine modulare Bibliothek aus fünf Low-Poly-Ufersteinen. Durch unterschiedliche Silhouetten, Proportionen und Grössen entstand eine zusammengehörige Formenfamilie für die spätere Gestaltung des Teichufers. Nach einem Vergleich von Shade Smooth und Shade Flat entschied ich mich für Shade Flat. Ziel ist ein natürlicherer Übergang zwischen Teich und Wiese. Alba: A Wildlife Adventure diente als Inspiration für eine reduzierte Naturdarstellung, während die konkrete Formgebung eine eigene visuelle Identität verfolgt. Die Wirkung in Unity ist noch zu prüfen.
 
 ### Sichtbare Kompetenzen
-Modulares Asset-Design, stilisierte Modellierung, bewusste Shading-Entscheidung und iterative Formbewertung. Screenshot-Belege und die spätere Prüfung im Spiel ergänzen den Portfolio-Nachweis.
+Modulares Asset-Design, stilisierte Modellierung, bewusste Shading-Entscheidung und iterative Formbewertung. Die drei Blender-Screenshots belegen Formen-, Silhouetten- und Grössenvariation. Die spätere Prüfung im Spiel ergänzt den Portfolio-Nachweis.
 
 [Zur Session-Übersicht](README.md) · [Vorlage für weitere Sessions](TEMPLATE.md)
