@@ -78,6 +78,12 @@ ProjectSettings/
 
 *(Coming soon)*
 
+## Portfolio
+
+[Container interaction case study with gameplay video](Docs/Portfolio/ContainerTransport.md) — design iterations towards responsive carrying with dynamic contents (German).
+
+[Portfolio overview](Docs/Portfolio/README.md)
+
 ---
 
 ## License
