@@ -1,5 +1,7 @@
 # HP3 Development Log
 
+Portfolio-Auswertungen, Entwicklungssessions und ihre Medien sind zentral in der [Portfolio-Übersicht](../Portfolio/README.md) abgelegt. Dieses Log enthält chronologische Entwicklungsnotizen.
+
 ---
 
 ## 2026-08-05

@@ -8,6 +8,8 @@
 
 ## Session-System und Portfolio
 
+- Alle Portfolio-Auswertungen, Fallstudien und Session-Dokumentationen zentral unter `Docs/Portfolio/` ablegen und in `Docs/Portfolio/README.md` verlinken. Bilder und Videos gehören nach `Docs/Portfolio/media/`; für neue Sessions `Docs/Portfolio/TEMPLATE.md` verwenden. `Docs/DevLog/` bleibt für chronologische Entwicklungsnotizen mit Links zu den Portfolio-Einträgen reserviert.
+
 - Die Marker `<session_S>` und `<session_E>` sind feste Befehle für die Zusammenarbeit. Gross-/Kleinschreibung spielt keine Rolle, beispielsweise zählt `<Session_S>` ebenfalls.
 - `<session_S>` startet eine Arbeitssession. Den Nutzer bei der Projektarbeit begleiten und auf potenziell portfolio-relevante Entwicklungsschritte achten.
 - Während der Session gelegentlich auf interessante Zwischenstände hinweisen, die vor weiteren Änderungen gesichert werden sollten, etwa durch Screenshots, kurze Videos, Greybox-Vergleiche oder Unity-Ansichten.
