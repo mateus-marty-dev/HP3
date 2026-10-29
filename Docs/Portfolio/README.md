@@ -2,6 +2,8 @@
 
 Diese Sammlung dokumentiert ausgewählte Entwicklungsschritte mit Gameplay-Material, Designentscheidungen und Erkenntnissen aus Playtests.
 
+[Gemeinsamer Index: manuelle Sessions und wöchentliche Erfolgslogs](INDEX.md)
+
 ## Einträge
 
 - **[25.10.2026 – Modulare Low-Poly-Ufersteine](2026-10-25-ufersteine.md)** – Environment Art in Blender, inklusive drei Screenshots. Dokumentierter Zwischenstand; Unity-Prüfung noch offen.
