@@ -20,6 +20,7 @@ public class PickupInteractable : Interactable
     private Vector3 heldVisualCenter;
 
     private Quaternion actionRotation = Quaternion.identity;
+    private Vector3 actionPosition = Vector3.zero;
     private Coroutine restorePlayerCollision;
 
     public bool IsHeld => isHeld;
@@ -41,6 +42,12 @@ public class PickupInteractable : Interactable
     public void SetActionRotation(Quaternion rotation)
     {
         actionRotation = rotation;
+    }
+
+    // Position offset in the hold point's local axes, independent of tool rotation.
+    public void SetActionPosition(Vector3 position)
+    {
+        actionPosition = position;
     }
 
     public void ConfigureHarvest(
@@ -70,7 +77,7 @@ public class PickupInteractable : Interactable
 
         Vector3 targetPosition =
             holdPoint.TransformPoint(
-                holdPositionOffset
+                holdPositionOffset + actionPosition
             );
 
         Quaternion targetRotation =
@@ -110,7 +117,7 @@ public class PickupInteractable : Interactable
     {
         if (!isHeld || rb == null || holdPoint == null) return;
         Quaternion rotation = holdPoint.rotation * Quaternion.Euler(holdRotationOffset) * actionRotation;
-        Vector3 position = holdPoint.TransformPoint(holdPositionOffset)
+        Vector3 position = holdPoint.TransformPoint(holdPositionOffset + actionPosition)
             - rotation * Vector3.Scale(heldVisualCenter, transform.lossyScale);
         GetComponent<BucketContents>()?.RenderCarry(position, rotation);
     }
@@ -183,6 +190,8 @@ public class PickupInteractable : Interactable
     private void Drop()
     {
         isHeld = false;
+
+        actionPosition = Vector3.zero;
 
         actionRotation =
             Quaternion.identity;
