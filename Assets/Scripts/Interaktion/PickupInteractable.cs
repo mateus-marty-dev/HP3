@@ -20,6 +20,7 @@ public class PickupInteractable : Interactable
     private Vector3 heldVisualCenter;
 
     private Quaternion actionRotation = Quaternion.identity;
+    private Coroutine restorePlayerCollision;
 
     public bool IsHeld => isHeld;
 
@@ -86,6 +87,10 @@ public class PickupInteractable : Interactable
                 transform.lossyScale
             );
 
+        BucketContents contents = GetComponent<BucketContents>();
+        if (contents != null && contents.TryMoveDynamicContents(rb, targetPosition, targetRotation))
+            return;
+
         rb.MovePosition(
             targetPosition
         );
@@ -99,6 +104,15 @@ public class PickupInteractable : Interactable
                 targetPosition,
                 targetRotation
             );
+    }
+
+    private void LateUpdate()
+    {
+        if (!isHeld || rb == null || holdPoint == null) return;
+        Quaternion rotation = holdPoint.rotation * Quaternion.Euler(holdRotationOffset) * actionRotation;
+        Vector3 position = holdPoint.TransformPoint(holdPositionOffset)
+            - rotation * Vector3.Scale(heldVisualCenter, transform.lossyScale);
+        GetComponent<BucketContents>()?.RenderCarry(position, rotation);
     }
 
     public override void Interact()
@@ -117,6 +131,12 @@ public class PickupInteractable : Interactable
     {
         if (rb == null || holdPoint == null)
             return;
+
+        if (restorePlayerCollision != null)
+        {
+            StopCoroutine(restorePlayerCollision);
+            restorePlayerCollision = null;
+        }
 
         if (detachOnPickup)
         {
@@ -153,6 +173,8 @@ public class PickupInteractable : Interactable
             Vector3.zero;
 
         rb.useGravity = false;
+        if (GetComponent<GentleItemPhysics>() != null)
+            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
         rb.isKinematic = true;
 
         IgnorePlayerCollision(true);
@@ -170,7 +192,46 @@ public class PickupInteractable : Interactable
 
         rb.isKinematic = false;
         rb.useGravity = true;
+        GentleItemPhysics tuning = GetComponent<GentleItemPhysics>();
+        if (tuning != null)
+        {
+            // E releases the item; it is not a throw. Discard motion inherited
+            // from the last kinematic movement of the player's hand.
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            tuning.UpdateCollisionMode();
+            restorePlayerCollision = StartCoroutine(RestoreCollisionWhenClear());
+        }
+        else IgnorePlayerCollision(false);
+    }
 
+    private System.Collections.IEnumerator RestoreCollisionWhenClear()
+    {
+        // Do not re-enable a collision inside the player's body at drop time.
+        yield return new WaitForFixedUpdate();
+        while (playerCollider != null && !isHeld)
+        {
+            bool overlaps = false;
+            foreach (Collider col in objectColliders)
+            {
+                if (col == null || !col.enabled || col.isTrigger) continue;
+                if (Physics.ComputePenetration(col, col.transform.position, col.transform.rotation,
+                    playerCollider, playerCollider.transform.position, playerCollider.transform.rotation,
+                    out _, out _)) { overlaps = true; break; }
+            }
+            if (!overlaps) break;
+            yield return new WaitForFixedUpdate();
+        }
+        if (!isHeld) IgnorePlayerCollision(false);
+        restorePlayerCollision = null;
+    }
+
+    private void OnDisable()
+    {
+        GetComponent<BucketContents>()?.ReleaseContents();
+        if (restorePlayerCollision == null) return;
+        StopCoroutine(restorePlayerCollision);
+        restorePlayerCollision = null;
         IgnorePlayerCollision(false);
     }
 

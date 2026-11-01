@@ -25,12 +25,18 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
-    - _FacetVariation: 0.08
-    - _Shine: 0.5
-    - _WaveHeight: 0.111
+    - _DeepAlpha: 0.6
+    - _DepthDistance: 3
+    - _DepthInfluence: 1
+    - _FacetVariation: 0.03
+    - _ShallowAlpha: 0.2
+    - _Shine: 0.15
+    - _WaveHeight: 0.05
     - _WaveLength: 3
-    - _WaveSpeed: 0.45
+    - _WaveSpeed: 0.25
     m_Colors:
     - _BaseColor: {r: 0.11999995, g: 0.47999996, b: 0.41999996, a: 0.65}
+    - _DeepColor: {r: 0.22352941, g: 0.4862745, b: 0.5137255, a: 1}
+    - _ShallowColor: {r: 0.45882353, g: 0.78039217, b: 0.7137255, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

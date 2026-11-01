@@ -168,6 +168,10 @@ public class PlantGrowth : MonoBehaviour
             body.useGravity = false;
             body.isKinematic = true;
             body.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+            if (fruit.CompareTag("Tomato") || fruit.name.StartsWith("Ripe_Tomato") ||
+                fruit.name.StartsWith("Potato", System.StringComparison.OrdinalIgnoreCase) ||
+                fruit.name.StartsWith("Carrot", System.StringComparison.OrdinalIgnoreCase))
+                GentleItemPhysics.Configure(body, false);
 
             PickupInteractable pickup = fruit.AddComponent<PickupInteractable>();
             pickup.ConfigureHarvest(harvestHoldPoint, harvestPlayerCollider, harvestHoldPositionOffset, bounds.center);

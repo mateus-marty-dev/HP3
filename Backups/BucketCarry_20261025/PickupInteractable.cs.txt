@@ -1,0 +1,246 @@
+using UnityEngine;
+
+public class PickupInteractable : Interactable
+{
+    [SerializeField] private Transform holdPoint;
+
+    [Header("Hold Offset")]
+    [SerializeField] private Vector3 holdPositionOffset;
+    [SerializeField] private Vector3 holdRotationOffset;
+
+    [Header("Player")]
+    [SerializeField] private Collider playerCollider;
+
+    private Rigidbody rb;
+    private Collider[] objectColliders;
+
+    private bool isHeld = false;
+    private bool detachOnPickup;
+
+    private Vector3 heldVisualCenter;
+
+    private Quaternion actionRotation = Quaternion.identity;
+    private Coroutine restorePlayerCollision;
+
+    public bool IsHeld => isHeld;
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+
+        objectColliders =
+            GetComponentsInChildren<Collider>();
+
+        if (rb != null)
+        {
+            rb.interpolation =
+                RigidbodyInterpolation.Interpolate;
+        }
+    }
+
+    public void SetActionRotation(Quaternion rotation)
+    {
+        actionRotation = rotation;
+    }
+
+    public void ConfigureHarvest(
+        Transform targetHoldPoint,
+        Collider targetPlayerCollider,
+        Vector3 positionOffset,
+        Vector3 visualCenter)
+    {
+        holdPoint = targetHoldPoint;
+        playerCollider = targetPlayerCollider;
+
+        holdPositionOffset = positionOffset;
+        heldVisualCenter = visualCenter;
+
+        detachOnPickup = true;
+
+        interactionText = "E - Pfluecken";
+    }
+
+    private void FixedUpdate()
+    {
+        if (!isHeld)
+            return;
+
+        if (rb == null || holdPoint == null)
+            return;
+
+        Vector3 targetPosition =
+            holdPoint.TransformPoint(
+                holdPositionOffset
+            );
+
+        Quaternion targetRotation =
+            holdPoint.rotation *
+            Quaternion.Euler(
+                holdRotationOffset
+            ) *
+            actionRotation;
+
+        targetPosition -=
+            targetRotation *
+            Vector3.Scale(
+                heldVisualCenter,
+                transform.lossyScale
+            );
+
+        BucketContents contents = GetComponent<BucketContents>();
+        if (contents != null && contents.TryMoveDynamicContents(rb, targetPosition, targetRotation))
+            return;
+
+        rb.MovePosition(
+            targetPosition
+        );
+
+        rb.MoveRotation(
+            targetRotation
+        );
+
+        GetComponent<BucketContents>()
+            ?.MoveContents(
+                targetPosition,
+                targetRotation
+            );
+    }
+
+    public override void Interact()
+    {
+        if (!isHeld)
+        {
+            PickUp();
+        }
+        else
+        {
+            Drop();
+        }
+    }
+
+    private void PickUp()
+    {
+        if (rb == null || holdPoint == null)
+            return;
+
+        if (restorePlayerCollision != null)
+        {
+            StopCoroutine(restorePlayerCollision);
+            restorePlayerCollision = null;
+        }
+
+        if (detachOnPickup)
+        {
+            transform.SetParent(
+                null,
+                true
+            );
+
+            holdRotationOffset =
+                (
+                    Quaternion.Inverse(
+                        holdPoint.rotation
+                    ) *
+                    transform.rotation
+                ).eulerAngles;
+
+            detachOnPickup = false;
+
+            interactionText =
+                "E - Aufheben";
+        }
+
+        isHeld = true;
+
+        GetComponent<BucketContents>()
+            ?.BeginCarry(
+                playerCollider
+            );
+
+        rb.linearVelocity =
+            Vector3.zero;
+
+        rb.angularVelocity =
+            Vector3.zero;
+
+        rb.useGravity = false;
+        if (GetComponent<GentleItemPhysics>() != null)
+            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+        rb.isKinematic = true;
+
+        IgnorePlayerCollision(true);
+    }
+
+    private void Drop()
+    {
+        isHeld = false;
+
+        actionRotation =
+            Quaternion.identity;
+
+        GetComponent<BucketContents>()
+            ?.ReleaseContents();
+
+        rb.isKinematic = false;
+        rb.useGravity = true;
+        GentleItemPhysics tuning = GetComponent<GentleItemPhysics>();
+        if (tuning != null)
+        {
+            // E releases the item; it is not a throw. Discard motion inherited
+            // from the last kinematic movement of the player's hand.
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            tuning.UpdateCollisionMode();
+            restorePlayerCollision = StartCoroutine(RestoreCollisionWhenClear());
+        }
+        else IgnorePlayerCollision(false);
+    }
+
+    private System.Collections.IEnumerator RestoreCollisionWhenClear()
+    {
+        // Do not re-enable a collision inside the player's body at drop time.
+        yield return new WaitForFixedUpdate();
+        while (playerCollider != null && !isHeld)
+        {
+            bool overlaps = false;
+            foreach (Collider col in objectColliders)
+            {
+                if (col == null || !col.enabled || col.isTrigger) continue;
+                if (Physics.ComputePenetration(col, col.transform.position, col.transform.rotation,
+                    playerCollider, playerCollider.transform.position, playerCollider.transform.rotation,
+                    out _, out _)) { overlaps = true; break; }
+            }
+            if (!overlaps) break;
+            yield return new WaitForFixedUpdate();
+        }
+        if (!isHeld) IgnorePlayerCollision(false);
+        restorePlayerCollision = null;
+    }
+
+    private void OnDisable()
+    {
+        if (restorePlayerCollision == null) return;
+        StopCoroutine(restorePlayerCollision);
+        restorePlayerCollision = null;
+        IgnorePlayerCollision(false);
+    }
+
+    private void IgnorePlayerCollision(
+        bool ignore)
+    {
+        if (playerCollider == null)
+            return;
+
+        foreach (Collider col in objectColliders)
+        {
+            if (col != null)
+            {
+                Physics.IgnoreCollision(
+                    col,
+                    playerCollider,
+                    ignore
+                );
+            }
+        }
+    }
+}

@@ -132,6 +132,7 @@ public class AppleGrowth : MonoBehaviour
         body.constraints = RigidbodyConstraints.None;
         body.interpolation = RigidbodyInterpolation.Interpolate;
         body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        GentleItemPhysics.Configure(body, false);
 
         // Fruit is embedded in foliage. Ignore crown collisions so it can fall free.
         if (distributor != null && distributor.crownMeshes != null)
