@@ -6,6 +6,7 @@ Diese Sammlung dokumentiert ausgewählte Entwicklungsschritte mit Gameplay-Mater
 
 ## Einträge
 
+- **[04.11.2026 – Vom Garten zur Tomatensuppe](2026-11-04-garten-zur-tomatensuppe.md)** – Spielbarer Ablauf von der Ernte bis zur fertigen Suppe, mit Video und Reflexion.
 - **[01.11.2026 – Modulares Mauerwerk für den Schlossturm](2026-11-01-turmmauer.md)** – Blender-Zwischenstand mit zehn Originalaufnahmen.
 - **[25.10.2026 – Modulare Low-Poly-Ufersteine](2026-10-25-ufersteine.md)** – Environment Art in Blender, inklusive drei Screenshots. Dokumentierter Zwischenstand; Unity-Prüfung noch offen.
 - **[Physikalischer Inhalt, direkte Steuerung](ContainerTransport.md)** – Behälter-Interaktion mit Tomaten, inklusive Gameplay-Video vom 25. Oktober 2026. Schwerpunkt: direkte Bedienung, beweglicher Inhalt und iterative Problemlösung.
