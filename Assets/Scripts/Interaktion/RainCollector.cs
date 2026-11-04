@@ -137,7 +137,8 @@ public class RainCollector : MonoBehaviour
     {
         if (OpeningFacesUp && weatherManager != null
             && (weatherManager.currentWeather == WeatherManager.WeatherType.Rainy
-                || weatherManager.currentWeather == WeatherManager.WeatherType.Stormy))
+                || weatherManager.currentWeather == WeatherManager.WeatherType.Stormy)
+            && !IsShelteredFromRain())
         {
             rainTimer += Time.deltaTime;
 
@@ -151,6 +152,20 @@ public class RainCollector : MonoBehaviour
         {
             rainTimer = 0f;
         }
+    }
+
+    private bool IsShelteredFromRain()
+    {
+        Vector3 opening = SurfaceCenter(waterTop);
+        foreach (RaycastHit hit in Physics.RaycastAll(
+            opening, Vector3.up, Mathf.Infinity, Physics.DefaultRaycastLayers,
+            QueryTriggerInteraction.Ignore))
+        {
+            if (!hit.collider.transform.IsChildOf(transform))
+                return true;
+        }
+
+        return false;
     }
 
     private void PourWater()

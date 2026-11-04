@@ -3,7 +3,32 @@ guid: f36d689aac00a60488c3f6278dc1e6e6
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Dunkler Naturstein
+    second: {fileID: 2100000, guid: df4013300de19fa4ea59dfd30e853781, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: "Graubeige \u2013 Hauptfarbe"
+    second: {fileID: 2100000, guid: 48e7121ca90e1b24a80c93520f80611a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Heller Sandstein
+    second: {fileID: 2100000, guid: 679971b1d81fb8f42af81b6251052652, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Moosgrau
+    second: {fileID: 2100000, guid: 63688be017a2c0a43b6b520f159cf6ff, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Warmes Steingrau
+    second: {fileID: 2100000, guid: 298a5a9dcb241da42ab194d45dc7d6e0, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
