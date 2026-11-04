@@ -17,7 +17,11 @@ Die bisher einzeln dokumentierten Interaktionen sollten eine zusammenhängende A
 
 ## Video
 
-[Aufgenommenen Spieldurchlauf ansehen oder herunterladen](media/2026-11-04-garten-zur-tomatensuppe.mp4?raw=true)
+[Portfolio-Kurzfassung ansehen oder herunterladen (0:57)](media/2026-11-04-garten-zur-tomatensuppe-kurz.mp4?raw=true)
+
+Die Kurzfassung beginnt bei den reifen Tomaten am Beet. Sie zeigt den Transport durch den Turmeingang und über die Wendeltreppe bis zum Herd. Ein Schnitt überspringt den grössten Teil der Wartezeit. Danach sind Dampf und der Farbwechsel zur roten Suppe in derselben Einstellung zu sehen.
+
+[Vollständigen Spieldurchlauf ansehen oder herunterladen (3:34)](media/2026-11-04-garten-zur-tomatensuppe.mp4?raw=true)
 
 Der vollständige Durchlauf dauert rund 3 Minuten 34 Sekunden. Für GitHub wurde die Aufnahme auf 1920 Pixel Breite verkleinert und als MP4 mit Ton exportiert.
 
@@ -25,7 +29,7 @@ Der vollständige Durchlauf dauert rund 3 Minuten 34 Sekunden. Für GitHub wurde
 
 Die Aufnahme verbindet Garten, Wasserstelle, Wendeltreppe und Herd zu einer spielbaren Aufgabe. Der Farbwechsel zur roten Suppe ist der sichtbarste Abschluss. Das Regenverhalten unter dem Dach braucht einen separaten Test mit gleichbleibendem Blick auf den Wasserstand.
 
-### Verbesserungen für die nächste Aufnahme
+### Schwerpunkte für Schnitt und nächste Aufnahme
 
 1. **Den Auftrag am Beet etablieren.** Mit der reifen Pflanze und dem leeren Gefäss im Bild beginnen. Bei der Ernte kurz auf der Gefässöffnung bleiben, damit die Tomaten als Zutaten erkennbar sind.
 2. **Den Weg lesbar machen.** Vor dem Losgehen kurz den Turmeingang zeigen und den Gang über die Wendeltreppe im Schnitt behalten. So ist nachvollziehbar, wie Garten und Kochstelle räumlich verbunden sind.
