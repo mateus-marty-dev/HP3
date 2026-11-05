@@ -25,6 +25,7 @@ public class AppleGrowth : MonoBehaviour
     private float ripeSeconds;
     private float fallDelay;
     private bool hasFallen;
+    private Rigidbody ripeBody;
 
     [Header("Runtime progress")]
     [SerializeField] private float storedWater;
@@ -71,6 +72,8 @@ public class AppleGrowth : MonoBehaviour
         if (hasFallen) return;
         if (IsRipe)
         {
+            if (redApple == null || !redApple.transform.IsChildOf(transform))
+                return;
             ripeSeconds += Time.deltaTime;
             if (fallWhenRipe && ripeSeconds >= fallDelay)
                 DropApple();
@@ -97,16 +100,14 @@ public class AppleGrowth : MonoBehaviour
             Mathf.Clamp01((growthSeconds - buddingSeconds) / Mathf.Max(0.1f, growingSeconds)));
         greenApple.SetActive(growthSeconds >= buddingSeconds && !IsRipe);
         redApple.SetActive(IsRipe);
+        if (IsRipe)
+            PrepareRipeApple();
     }
 
-    private void DropApple()
+    private void PrepareRipeApple()
     {
-        if (redApple == null) return;
-        hasFallen = true;
         AppleDistributor distributor = GetComponentInParent<AppleDistributor>();
 
-        // Only the ripe fruit detaches; the holder and tree remain in place.
-        redApple.transform.SetParent(null, true);
         Renderer[] renderers = redApple.GetComponentsInChildren<Renderer>();
         Bounds bounds = new Bounds(redApple.transform.position, Vector3.one * 0.1f);
         if (renderers.Length > 0)
@@ -124,15 +125,23 @@ public class AppleGrowth : MonoBehaviour
         float largestScale = Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z), 0.0001f);
         fruitCollider.radius = Mathf.Max(0.005f, Mathf.Min(bounds.extents.x, bounds.extents.y, bounds.extents.z)) / largestScale;
 
-        Rigidbody body = redApple.GetComponent<Rigidbody>();
-        if (body == null) body = redApple.AddComponent<Rigidbody>();
-        body.mass = 0.15f;
-        body.isKinematic = false;
-        body.useGravity = true;
-        body.constraints = RigidbodyConstraints.None;
-        body.interpolation = RigidbodyInterpolation.Interpolate;
-        body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-        GentleItemPhysics.Configure(body, false);
+        ripeBody = redApple.GetComponent<Rigidbody>();
+        if (ripeBody == null) ripeBody = redApple.AddComponent<Rigidbody>();
+        ripeBody.mass = 0.15f;
+        ripeBody.isKinematic = true;
+        ripeBody.useGravity = false;
+        ripeBody.constraints = RigidbodyConstraints.None;
+        ripeBody.interpolation = RigidbodyInterpolation.Interpolate;
+        ripeBody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+        GentleItemPhysics.Configure(ripeBody, false);
+
+        if (distributor != null && distributor.harvestHoldPoint != null)
+        {
+            PickupInteractable pickup = redApple.GetComponent<PickupInteractable>();
+            if (pickup == null) pickup = redApple.AddComponent<PickupInteractable>();
+            pickup.ConfigureHarvest(distributor.harvestHoldPoint, distributor.harvestPlayerCollider,
+                new Vector3(0f, 0.65f, 0.35f), fruitCollider.center);
+        }
 
         // Fruit is embedded in foliage. Ignore crown collisions so it can fall free.
         if (distributor != null && distributor.crownMeshes != null)
@@ -142,6 +151,18 @@ public class AppleGrowth : MonoBehaviour
                 foreach (Collider crownCollider in crown.GetComponents<Collider>())
                     Physics.IgnoreCollision(fruitCollider, crownCollider);
             }
-        body.angularVelocity = Random.insideUnitSphere * 1.5f;
+    }
+
+    private void DropApple()
+    {
+        if (ripeBody == null) return;
+        hasFallen = true;
+        redApple.transform.SetParent(null, true);
+        ripeBody.isKinematic = false;
+        ripeBody.useGravity = true;
+        ripeBody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        ripeBody.angularVelocity = Random.insideUnitSphere * 1.5f;
+        if (redApple.TryGetComponent(out PickupInteractable pickup))
+            pickup.interactionText = "E - Aufheben";
     }
 }

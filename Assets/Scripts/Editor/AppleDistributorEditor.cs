@@ -142,6 +142,7 @@ public class AppleDistributorEditor : Editor
             if (settings.redAppleTemplate != null)
             {
                 GameObject red = CopyApple(settings.redAppleTemplate, holder.transform, settings.appleScale, settings.localStemDirection, "Red Apple");
+                green.SetActive(false);
                 red.SetActive(false);
                 AppleGrowth growth = Undo.AddComponent<AppleGrowth>(holder);
                 var serialized = new SerializedObject(growth);

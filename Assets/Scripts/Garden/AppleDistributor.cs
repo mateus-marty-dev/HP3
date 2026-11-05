@@ -10,6 +10,10 @@ public class AppleDistributor : MonoBehaviour
     [Tooltip("Optional: creates AppleGrowth holders with matching red apples.")]
     public GameObject redAppleTemplate;
 
+    [Header("Harvest")]
+    public Transform harvestHoldPoint;
+    public Collider harvestPlayerCollider;
+
     [Header("Distribution (world metres)")]
     [Min(1)] public int appleCount = 30;
     [Min(0.01f)] public float minimumSpacing = 0.3f;
