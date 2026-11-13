@@ -52,6 +52,16 @@ public class BucketContents : MonoBehaviour
     }
 
     private BucketCarryPhysics transport;
+    public bool ContainsBody(Rigidbody body)
+    {
+        if (transport == null)
+        {
+            transport = GetComponent<BucketCarryPhysics>();
+            if (transport == null) transport = gameObject.AddComponent<BucketCarryPhysics>();
+            transport.ConfigureFloor(transportFloor, rectangularContents);
+        }
+        return transport.ContainsBody(body);
+    }
     public bool TryMoveDynamicContents(Rigidbody vessel, Vector3 position, Quaternion rotation)
     {
         if (!supportDynamicContents) return false;

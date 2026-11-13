@@ -8,6 +8,7 @@ public class StoveHeatZone : MonoBehaviour
     private readonly HashSet<WaterHeating> occupants = new HashSet<WaterHeating>();
 
     public bool IsHeating => isActiveAndEnabled && stoveFire != null && stoveFire.IsBurning;
+    public Vector3 CookingPosition => heatTrigger != null ? heatTrigger.bounds.center : transform.position;
 
     private void FixedUpdate()
     {

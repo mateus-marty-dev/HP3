@@ -38,6 +38,8 @@ public class RainCollector : MonoBehaviour
     private float emptyMass;
     private bool rimUnderwater;
     public bool HasWater => fillLevel > 0.001f;
+    public float FillLevel => fillLevel;
+    public Vector3 RimPosition => waterTop != null ? SurfaceCenter(waterTop) : transform.position;
     public Renderer WaterSurfaceRenderer => water != null ? water.GetComponent<Renderer>() : null;
 
     private void Awake()

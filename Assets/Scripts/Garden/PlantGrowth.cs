@@ -29,6 +29,15 @@ public class PlantGrowth : MonoBehaviour
     [SerializeField] private float moistSecondsInStage;
 
     public int CurrentStage => currentStage;
+    public void RipenForNpcTest()
+    {
+        if (!enabled || growthStages == null || growthStages.Length == 0) return;
+        currentStage = growthStages.Length - 1;
+        moistSecondsInStage = Mathf.Max(0.1f, secondsPerStage);
+        UpdateStageZeroSize();
+        ShowCurrentStage();
+        if (!harvestPrepared) PrepareHarvest();
+    }
     public bool IsFullyGrown => growthStages != null && growthStages.Length > 0
         && currentStage == growthStages.Length - 1
         && (currentStage > 0 || moistSecondsInStage >= Mathf.Max(0.1f, secondsPerStage));

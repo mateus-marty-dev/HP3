@@ -34,6 +34,11 @@ public class DoorInteractable : Interactable
     }
 
     private bool isOpen = false;
+    public bool IsOpen => isOpen && !moving;
+    public void OpenForNpc()
+    {
+        if (!isOpen && !moving) Interact();
+    }
 
     private Quaternion closedRotation;
     private Quaternion openRotation;

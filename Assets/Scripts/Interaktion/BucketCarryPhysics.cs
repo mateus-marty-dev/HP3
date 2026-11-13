@@ -24,6 +24,11 @@ public sealed class BucketCarryPhysics : MonoBehaviour
     [SerializeField] private int trackedContents;
     public IEnumerable<Rigidbody> Contents => contents;
 
+    public bool ContainsBody(Rigidbody body)
+    {
+        return body != null && Initialize() && Eligible(body) && Inside(body, false);
+    }
+
     public bool Initialize()
     {
         if (ready) return true;

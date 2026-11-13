@@ -187,6 +187,11 @@ public class PickupInteractable : Interactable
         IgnorePlayerCollision(true);
     }
 
+    public void ReleaseNpcHarvest()
+    {
+        if (!isHeld) Drop();
+    }
+
     private void Drop()
     {
         isHeld = false;
