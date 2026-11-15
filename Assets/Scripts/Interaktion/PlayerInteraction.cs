@@ -28,9 +28,24 @@ public class PlayerInteraction : MonoBehaviour
         if (playerCamera == null) return;
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
         Interactable interactable = null;
+        float visibleDistance = interactionDistance;
         if (Physics.Raycast(ray, out RaycastHit hit, interactionDistance,
                 Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+        {
             interactable = hit.collider.GetComponentInParent<Interactable>();
+            visibleDistance = hit.distance;
+        }
+
+        // Only zombie interaction triggers participate; walls still block the request.
+        foreach (RaycastHit candidate in Physics.RaycastAll(ray, interactionDistance,
+                     Physics.DefaultRaycastLayers, QueryTriggerInteraction.Collide))
+        {
+            if (!candidate.collider.isTrigger || candidate.distance > visibleDistance) continue;
+            ZombieBehaviour zombie = candidate.collider.GetComponentInParent<ZombieBehaviour>();
+            if (zombie == null || !zombie.isActiveAndEnabled) continue;
+            interactable = zombie;
+            visibleDistance = candidate.distance;
+        }
 
         if (interactable == null)
             interactable = FindNearbyStove(ray);

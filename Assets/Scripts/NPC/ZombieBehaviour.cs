@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Animator))]
-public partial class ZombieBehaviour : MonoBehaviour
+public partial class ZombieBehaviour : Interactable
 {
     public enum MovementLevel { Schlendern = 1, Spazieren = 2, Rennen = 3 }
 
@@ -38,6 +38,7 @@ public partial class ZombieBehaviour : MonoBehaviour
     [Header("Interaction diagnostics (Play Mode)")]
     [SerializeField] private string interactionStatus = "Noch keine Interaktion";
     private bool deliveryFinished;
+    private bool taskStarted;
     private Vector3 harvestHandTarget;
     private PickupInteractable heldTomato;
     [Header("Right hand grip")]
@@ -90,6 +91,10 @@ public partial class ZombieBehaviour : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         animator.applyRootMotion = false;
+        animator.SetBool(IsWalking, false);
+        interactionText = "E - Korbauftrag starten";
+        interactionStatus = "Warte auf Petrusilius (E)";
+        CreateInteractionTarget();
         foreach (Transform bone in GetComponentsInChildren<Transform>())
         {
             switch (bone.name)
@@ -130,19 +135,18 @@ public partial class ZombieBehaviour : MonoBehaviour
         agent.stoppingDistance = arrivalDistance;
         agent.autoBraking = true;
 
-        // Reuse a baked surface if available, otherwise build from scene collision geometry.
-        if (!NavMesh.SamplePosition(transform.position, out NavMeshHit start, 3f, NavMesh.AllAreas))
+        // Das NavMesh wird dauerhaft in der Unity-Szene gebacken.
+        // Der Zombie verwendet nur vorhandene Navigationsdaten.
+        if (!NavMesh.SamplePosition(
+                transform.position,
+                out NavMeshHit start,
+                3f,
+                NavMesh.AllAreas))
         {
-            navigationObject = new GameObject("Zombie Navigation");
-            NavMeshSurface surface = navigationObject.AddComponent<NavMeshSurface>();
-            surface.agentTypeID = agent.agentTypeID;
-            surface.collectObjects = CollectObjects.All;
-            surface.useGeometry = NavMeshCollectGeometry.PhysicsColliders;
-            surface.BuildNavMesh();
-        }
-        if (!NavMesh.SamplePosition(transform.position, out start, 3f, NavMesh.AllAreas))
-        {
-            Debug.LogWarning("Zombie cannot find walkable ground. Check the terrain colliders and navigation surface.", this);
+            Debug.LogWarning(
+                "Zombie findet kein NavMesh. Navigation in der Szene prüfen.",
+                this
+            );
             enabled = false;
             return;
         }
@@ -213,6 +217,7 @@ public partial class ZombieBehaviour : MonoBehaviour
     private void Update()
     {
         if (!initialized || !agent.isOnNavMesh) return;
+        if (!taskStarted) return;
         if (harvesting || deliveryFinished) return;
         int level = Mathf.Clamp((int)movementLevel, 1, 3);
         float multiplier = level == 3 ? 4.6170213f : level == 2 ? 1.6489362f : 1f;
@@ -258,6 +263,42 @@ public partial class ZombieBehaviour : MonoBehaviour
             stuckTime += Time.deltaTime;
             if (stuckTime >= 10f) BeginIdle();
         }
+    }
+
+    public override void Interact()
+    {
+        if (!isActiveAndEnabled || !initialized || !agent.isOnNavMesh || taskStarted || deliveryFinished)
+            return;
+        taskStarted = true;
+        tomatoDelivery = true;
+        interactionText = "Korbauftrag laeuft";
+        interactionStatus = "Korbauftrag von Petrusilius erhalten";
+        BeginIdle();
+        remainingTime = 0f;
+    }
+
+    private void CreateInteractionTarget()
+    {
+        // This ray target does not obstruct navigation or carried objects.
+        bool found = false;
+        Bounds localBounds = default;
+        foreach (Renderer visual in GetComponentsInChildren<Renderer>())
+        {
+            Bounds bounds = visual.bounds;
+            for (int corner = 0; corner < 8; corner++)
+            {
+                Vector3 point = transform.InverseTransformPoint(bounds.center + Vector3.Scale(bounds.extents,
+                    new Vector3((corner & 1) == 0 ? -1 : 1, (corner & 2) == 0 ? -1 : 1,
+                        (corner & 4) == 0 ? -1 : 1)));
+                if (!found) { localBounds = new Bounds(point, Vector3.zero); found = true; }
+                else localBounds.Encapsulate(point);
+            }
+        }
+        if (!found) return;
+        BoxCollider target = gameObject.AddComponent<BoxCollider>();
+        target.isTrigger = true;
+        target.center = localBounds.center;
+        target.size = localBounds.size;
     }
 
     private void ChooseDestination()
@@ -342,7 +383,7 @@ public partial class ZombieBehaviour : MonoBehaviour
             case DeliveryStep.Deliver:
                 if (TomatoesInBasket() < 4)
                     deliveryStep = DeliveryStep.CarryToTomatoes;
-                else StartCoroutine(CookTomatoSoup());
+                else StartCoroutine(DeliverBasketToKitchen());
                 break;
         }
     }
@@ -594,14 +635,14 @@ public partial class ZombieBehaviour : MonoBehaviour
         return bounds;
     }
 
-    private bool PutBasketDown()
+    private bool PutBasketDown(bool checkDoorClearance = true)
     {
         if (carriedBasket == null) return false;
         Bounds bounds = BasketBounds(carriedBasket);
         // Keep the vessel beside the agent, on the same accessible side of the door.
         Vector3 ground = transform.position + transform.right * (bounds.extents.magnitude + 0.2f);
         if (!NavMesh.SamplePosition(ground, out NavMeshHit hit, 1f, agent.areaMask)) return false;
-        if (deliveryStep == DeliveryStep.Deliver &&
+        if (checkDoorClearance && deliveryStep == DeliveryStep.Deliver &&
             Vector3.ProjectOnPlane(hit.position - deliveryDoor.position, Vector3.up).magnitude < doorClearance)
             return false;
         Vector3 position = basketBody.position + new Vector3(hit.position.x - bounds.center.x,
@@ -692,7 +733,7 @@ public partial class ZombieBehaviour : MonoBehaviour
     private void OnDisable()
     {
         StopAllCoroutines();
-        ReleaseCookingPan();
+        ReleaseCookingPot();
         harvesting = false;
         reaching = false;
         if (agent != null) agent.updateRotation = true;
@@ -783,7 +824,7 @@ public partial class ZombieBehaviour : MonoBehaviour
 
     private void FixedUpdate()
     {
-        MoveCookingPan();
+        MoveCookingPot();
         if (heldTomato != null)
         {
             Rigidbody fruitBody = heldTomato.GetComponent<Rigidbody>();
@@ -811,7 +852,7 @@ public partial class ZombieBehaviour : MonoBehaviour
 
     private void LateUpdate()
     {
-        PoseCookingPan();
+        PoseCookingPot();
         float desiredLean = reaching && harvestHandTarget.y < rightUpperArm.position.y ? 30f : 0f;
         interactionLean = Mathf.MoveTowards(interactionLean, desiredLean, 75f * Time.deltaTime);
         if (interactionSpine != null)

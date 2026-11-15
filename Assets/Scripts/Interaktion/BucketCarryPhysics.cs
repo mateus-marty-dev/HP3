@@ -168,7 +168,8 @@ public sealed class BucketCarryPhysics : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         if (!ready) return;
-        Gizmos.matrix = Matrix4x4.TRS(vessel.position, vessel.rotation, scale) * Matrix4x4.Rotate(cavityRotation);
+        Gizmos.matrix = Matrix4x4.TRS(vessel.position, vessel.rotation.normalized, scale)
+            * Matrix4x4.Rotate(cavityRotation.normalized);
         Gizmos.color = Color.green;
         Gizmos.DrawWireCube(cavity.center, cavity.size);
         Gizmos.matrix = Matrix4x4.identity;
