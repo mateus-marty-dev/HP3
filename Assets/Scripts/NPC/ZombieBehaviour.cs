@@ -540,6 +540,10 @@ public partial class ZombieBehaviour : Interactable
         {
             yield return FaceInteraction(target.position);
             currentTarget = target;
+            if (target.name.Split('(')[0].Trim() == "Basket" && carriedBasket == null &&
+                (!tomatoDelivery || deliveryStep == DeliveryStep.FetchBasket || deliveryStep == DeliveryStep.CollectBasket) &&
+                interactionSpine != null && leftHand != null && rightHand != null)
+                yield return ReachForBasket(target);
             harvesting = false;
             if (tomatoDelivery) HandleDeliveryArrival();
             else TryPickUpBasket();
@@ -768,6 +772,9 @@ public partial class ZombieBehaviour : Interactable
         if (Vector3.Distance(transform.position, bounds.ClosestPoint(transform.position)) > 2f) return;
 
         carriedBasket = currentTarget;
+        basketLiftStart = carriedBasket.position;
+        basketLiftRotation = carriedBasket.rotation;
+        basketLiftStarted = Time.time;
         basketObstacle = carriedBasket.GetComponent<NavMeshObstacle>();
         if (basketObstacle != null) basketObstacle.enabled = false;
         basketParent = carriedBasket.parent;
@@ -837,6 +844,7 @@ public partial class ZombieBehaviour : Interactable
         if (contents != null && contents.TryMoveDynamicContents(basketBody, carryPosition, carryRotation)) return;
         basketBody.MovePosition(carryPosition);
         basketBody.MoveRotation(carryRotation);
+        contents?.MoveContents(carryPosition, carryRotation);
     }
 
     private void GetCarryPose(out Vector3 position, out Quaternion rotation)
@@ -846,17 +854,21 @@ public partial class ZombieBehaviour : Interactable
             + Vector3.Distance(leftForearm.position, leftHand.position);
         Vector3 grip = shoulders + transform.forward * Mathf.Max(armLength * 0.65f, basketCarryDepth + 0.1f)
             - transform.up * (armLength * 0.35f);
-        rotation = transform.rotation * basketCarryRotation;
+        rotation = Quaternion.AngleAxis(basketPourAngle, transform.right) * transform.rotation * basketCarryRotation;
         position = grip - rotation * Vector3.Scale(basketGripLocal, carriedBasket.lossyScale);
+        float lift = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((Time.time - basketLiftStarted) / 1.2f));
+        position = Vector3.Lerp(basketLiftStart, position, lift);
+        rotation = Quaternion.Slerp(basketLiftRotation, rotation, lift);
     }
 
     private void LateUpdate()
     {
-        PoseCookingPot();
+        RestorePotBend();
         float desiredLean = reaching && harvestHandTarget.y < rightUpperArm.position.y ? 30f : 0f;
         interactionLean = Mathf.MoveTowards(interactionLean, desiredLean, 75f * Time.deltaTime);
         if (interactionSpine != null)
             interactionSpine.rotation = Quaternion.AngleAxis(interactionLean, transform.right) * interactionSpine.rotation;
+        PoseCookingPot();
         if (reaching || heldTomato != null)
         {
             Vector3 target = reaching ? harvestHandTarget :
@@ -890,7 +902,8 @@ public partial class ZombieBehaviour : Interactable
         carriedBasket.GetComponent<BucketContents>()?.RenderCarry(carryPosition, carryRotation);
     }
 
-    private void PoseCarryingArm(Transform upper, Transform forearm, Transform hand, Vector3 target)
+    private void PoseCarryingArm(Transform upper, Transform forearm, Transform hand, Vector3 target,
+        Vector3? elbowPole = null)
     {
         Vector3 shoulder = upper.position;
         float upperLength = Vector3.Distance(shoulder, forearm.position);
@@ -902,7 +915,9 @@ public partial class ZombieBehaviour : Interactable
         float along = (upperLength * upperLength - lowerLength * lowerLength
             + distance * distance) / (2f * distance);
         float bend = Mathf.Sqrt(Mathf.Max(0f, upperLength * upperLength - along * along));
-        Vector3 elbowDirection = Vector3.ProjectOnPlane(-transform.up, direction).normalized;
+        Vector3 elbowDirection = Vector3.ProjectOnPlane(elbowPole ?? -transform.up, direction).normalized;
+        if (elbowDirection.sqrMagnitude < 0.001f)
+            elbowDirection = Vector3.ProjectOnPlane(transform.forward, direction).normalized;
         Vector3 elbow = shoulder + direction * along + elbowDirection * bend;
         upper.rotation = Quaternion.FromToRotation(forearm.position - shoulder, elbow - shoulder)
             * upper.rotation;
