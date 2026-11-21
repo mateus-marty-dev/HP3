@@ -113,6 +113,9 @@ public sealed class ZombieTomatoPickup : MonoBehaviour
             return;
         }
 
+        PlayerInteraction interaction = player.GetComponent<PlayerInteraction>();
+        if (interaction != null && interaction.IsTargetingReadableBook) return;
+
         Vector3 difference = player.position - transform.position;
         float horizontalDistance = Vector3.ProjectOnPlane(difference, Vector3.up).magnitude;
         if (horizontalDistance > interactionDistance ||

@@ -1,3 +1,6 @@
+
+using System;
+using System.Collections;
 using UnityEngine;
 
 public class PickupInteractable : Interactable
@@ -25,12 +28,13 @@ public class PickupInteractable : Interactable
 
     public bool IsHeld => isHeld;
 
+    // NEW: True when picked up, false when dropped.
+    public event Action<bool> HeldStateChanged;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-
-        objectColliders =
-            GetComponentsInChildren<Collider>();
+        objectColliders = GetComponentsInChildren<Collider>();
 
         if (rb != null)
         {
@@ -44,7 +48,6 @@ public class PickupInteractable : Interactable
         actionRotation = rotation;
     }
 
-    // Position offset in the hold point's local axes, independent of tool rotation.
     public void SetActionPosition(Vector3 position)
     {
         actionPosition = position;
@@ -69,10 +72,7 @@ public class PickupInteractable : Interactable
 
     private void FixedUpdate()
     {
-        if (!isHeld)
-            return;
-
-        if (rb == null || holdPoint == null)
+        if (!isHeld || rb == null || holdPoint == null)
             return;
 
         Vector3 targetPosition =
@@ -82,9 +82,7 @@ public class PickupInteractable : Interactable
 
         Quaternion targetRotation =
             holdPoint.rotation *
-            Quaternion.Euler(
-                holdRotationOffset
-            ) *
+            Quaternion.Euler(holdRotationOffset) *
             actionRotation;
 
         targetPosition -=
@@ -95,43 +93,51 @@ public class PickupInteractable : Interactable
             );
 
         BucketContents contents = GetComponent<BucketContents>();
-        if (contents != null && contents.TryMoveDynamicContents(rb, targetPosition, targetRotation))
+
+        if (contents != null &&
+            contents.TryMoveDynamicContents(
+                rb, targetPosition, targetRotation))
+        {
             return;
+        }
 
-        rb.MovePosition(
-            targetPosition
-        );
-
-        rb.MoveRotation(
-            targetRotation
-        );
+        rb.MovePosition(targetPosition);
+        rb.MoveRotation(targetRotation);
 
         GetComponent<BucketContents>()
-            ?.MoveContents(
-                targetPosition,
-                targetRotation
-            );
+            ?.MoveContents(targetPosition, targetRotation);
     }
 
     private void LateUpdate()
     {
-        if (!isHeld || rb == null || holdPoint == null) return;
-        Quaternion rotation = holdPoint.rotation * Quaternion.Euler(holdRotationOffset) * actionRotation;
-        Vector3 position = holdPoint.TransformPoint(holdPositionOffset + actionPosition)
-            - rotation * Vector3.Scale(heldVisualCenter, transform.lossyScale);
-        GetComponent<BucketContents>()?.RenderCarry(position, rotation);
+        if (!isHeld || rb == null || holdPoint == null)
+            return;
+
+        Quaternion rotation =
+            holdPoint.rotation *
+            Quaternion.Euler(holdRotationOffset) *
+            actionRotation;
+
+        Vector3 position =
+            holdPoint.TransformPoint(
+                holdPositionOffset + actionPosition
+            ) -
+            rotation *
+            Vector3.Scale(
+                heldVisualCenter,
+                transform.lossyScale
+            );
+
+        GetComponent<BucketContents>()
+            ?.RenderCarry(position, rotation);
     }
 
     public override void Interact()
     {
         if (!isHeld)
-        {
             PickUp();
-        }
         else
-        {
             Drop();
-        }
     }
 
     private void PickUp()
@@ -147,110 +153,143 @@ public class PickupInteractable : Interactable
 
         if (detachOnPickup)
         {
-            transform.SetParent(
-                null,
-                true
-            );
+            transform.SetParent(null, true);
 
             holdRotationOffset =
                 (
-                    Quaternion.Inverse(
-                        holdPoint.rotation
-                    ) *
+                    Quaternion.Inverse(holdPoint.rotation) *
                     transform.rotation
                 ).eulerAngles;
 
             detachOnPickup = false;
-
-            interactionText =
-                "E - Aufheben";
+            interactionText = "E - Aufheben";
         }
 
         isHeld = true;
 
         GetComponent<BucketContents>()
-            ?.BeginCarry(
-                playerCollider
-            );
+            ?.BeginCarry(playerCollider);
 
-        rb.linearVelocity =
-            Vector3.zero;
-
-        rb.angularVelocity =
-            Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
 
         rb.useGravity = false;
+
         if (GetComponent<GentleItemPhysics>() != null)
-            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+        {
+            rb.collisionDetectionMode =
+                CollisionDetectionMode.ContinuousSpeculative;
+        }
+
         rb.isKinematic = true;
 
         IgnorePlayerCollision(true);
+
+        // Notify listeners, including the readable book.
+        HeldStateChanged?.Invoke(true);
     }
 
     public void ReleaseNpcHarvest()
     {
-        if (!isHeld) Drop();
+        if (!isHeld)
+            Drop();
     }
 
     private void Drop()
     {
+        if (rb == null)
+            return;
+
         isHeld = false;
 
         actionPosition = Vector3.zero;
-
-        actionRotation =
-            Quaternion.identity;
+        actionRotation = Quaternion.identity;
 
         GetComponent<BucketContents>()
             ?.ReleaseContents();
 
         rb.isKinematic = false;
         rb.useGravity = true;
-        GentleItemPhysics tuning = GetComponent<GentleItemPhysics>();
+
+        GentleItemPhysics tuning =
+            GetComponent<GentleItemPhysics>();
+
         if (tuning != null)
         {
-            // E releases the item; it is not a throw. Discard motion inherited
-            // from the last kinematic movement of the player's hand.
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
+
             tuning.UpdateCollisionMode();
-            restorePlayerCollision = StartCoroutine(RestoreCollisionWhenClear());
+
+            restorePlayerCollision =
+                StartCoroutine(RestoreCollisionWhenClear());
         }
-        else IgnorePlayerCollision(false);
+        else
+        {
+            IgnorePlayerCollision(false);
+        }
+
+        HeldStateChanged?.Invoke(false);
     }
 
-    private System.Collections.IEnumerator RestoreCollisionWhenClear()
+    private IEnumerator RestoreCollisionWhenClear()
     {
-        // Do not re-enable a collision inside the player's body at drop time.
         yield return new WaitForFixedUpdate();
+
         while (playerCollider != null && !isHeld)
         {
             bool overlaps = false;
+
             foreach (Collider col in objectColliders)
             {
-                if (col == null || !col.enabled || col.isTrigger) continue;
-                if (Physics.ComputePenetration(col, col.transform.position, col.transform.rotation,
-                    playerCollider, playerCollider.transform.position, playerCollider.transform.rotation,
-                    out _, out _)) { overlaps = true; break; }
+                if (col == null ||
+                    !col.enabled ||
+                    col.isTrigger)
+                {
+                    continue;
+                }
+
+                if (Physics.ComputePenetration(
+                    col,
+                    col.transform.position,
+                    col.transform.rotation,
+                    playerCollider,
+                    playerCollider.transform.position,
+                    playerCollider.transform.rotation,
+                    out _,
+                    out _))
+                {
+                    overlaps = true;
+                    break;
+                }
             }
-            if (!overlaps) break;
+
+            if (!overlaps)
+                break;
+
             yield return new WaitForFixedUpdate();
         }
-        if (!isHeld) IgnorePlayerCollision(false);
+
+        if (!isHeld)
+            IgnorePlayerCollision(false);
+
         restorePlayerCollision = null;
     }
 
     private void OnDisable()
     {
         GetComponent<BucketContents>()?.ReleaseContents();
-        if (restorePlayerCollision == null) return;
+
+        if (restorePlayerCollision == null)
+            return;
+
         StopCoroutine(restorePlayerCollision);
         restorePlayerCollision = null;
+
         IgnorePlayerCollision(false);
     }
 
-    private void IgnorePlayerCollision(
-        bool ignore)
+    private void IgnorePlayerCollision(bool ignore)
     {
         if (playerCollider == null)
             return;
