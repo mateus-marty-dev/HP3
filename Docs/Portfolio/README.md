@@ -6,6 +6,7 @@ Diese Sammlung dokumentiert ausgewählte Entwicklungsschritte mit Gameplay-Mater
 
 ## Einträge
 
+- **[21.11.2026 – Zombie-Kochablauf: Greifen, NavMesh und Herd](2026-11-21-zombie-kochablauf-interaktionen.md)** – Iterationen an Tomaten- und Pfannenphysik, Herdnavigation und zustandsabhängigem Kochauftrag; Playtests, Regressionen und Ausblick auf modulare NPC-Architektur.
 - **[15.11.2026 – Zombie-Navigation über die Wendeltreppe](2026-11-15-zombie-wendeltreppe-navmesh.md)** – NavMesh-Iteration, Küchen-Zielpunkt, Console-Diagnose (`remainingDistance = Infinity`) und erfolgreiche Korrektur der NPC-Interaktionsschlaufe; Bildbelege zum Hochladen vorbereitet.
 - **[04.11.2026 – Vom Garten zur Tomatensuppe](2026-11-04-garten-zur-tomatensuppe.md)** – Spielbarer Ablauf von der Ernte bis zur fertigen Suppe, mit Video und Reflexion.
 - **[01.11.2026 – Modulares Mauerwerk für den Schlossturm](2026-11-01-turmmauer.md)** – Blender-Zwischenstand mit zehn Originalaufnahmen.
