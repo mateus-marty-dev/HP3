@@ -15,12 +15,12 @@ public partial class ZombieBehaviour : Interactable
     [Header("Pause at each destination (seconds)")]
     [SerializeField] private Vector2 idleDuration = new Vector2(3f, 8f);
     [Header("Speed for Schlendern (metres per second)")]
-    [Min(0f)] [SerializeField] private float walkSpeed = 0.17f;
+    [Min(0f)][SerializeField] private float walkSpeed = 0.17f;
     [Header("Destinations")]
     [SerializeField] private bool automaticallyAddGardenTargets = true;
     [SerializeField] private Transform[] destinations = new Transform[0];
-    [Min(0.1f)] [SerializeField] private float arrivalDistance = 0.3f;
-    [Min(0.1f)] [SerializeField] private float objectClearance = 0.7f;
+    [Min(0.1f)][SerializeField] private float arrivalDistance = 0.3f;
+    [Min(0.1f)][SerializeField] private float objectClearance = 0.7f;
     [Header("Tomato delivery test")]
     [SerializeField] private bool tomatoDelivery = true;
     [SerializeField] private bool ripeTomatoesAtStart = true;
@@ -28,7 +28,7 @@ public partial class ZombieBehaviour : Interactable
     private enum DeliveryStep { FetchBasket, CarryToTomatoes, Harvest, ReturnToBasket, CollectBasket, Deliver, Finished }
     private DeliveryStep deliveryStep;
     private Transform taskBasket;
-    [Min(1f)] [SerializeField] private float doorClearance = 1.5f;
+    [Min(1f)][SerializeField] private float doorClearance = 1.5f;
     private Vector3 carryPosition;
     private Quaternion carryRotation;
     private readonly List<PickupInteractable> harvestedTomatoes = new List<PickupInteractable>();
@@ -43,7 +43,7 @@ public partial class ZombieBehaviour : Interactable
     private PickupInteractable heldTomato;
     [Header("Right hand grip")]
     [Tooltip("Finger offset as a fraction of the visible forearm length, independent of FBX bone scale.")]
-    [Range(0f, 0.6f)] [SerializeField] private float fingerGripFraction = 0.3f;
+    [Range(0f, 0.6f)][SerializeField] private float fingerGripFraction = 0.3f;
     private NavMeshObstacle basketObstacle;
     private float FingerGripDistance => Vector3.Distance(rightForearm.position, rightHand.position)
         * Mathf.Clamp(fingerGripFraction, 0f, 0.6f);
@@ -269,6 +269,7 @@ public partial class ZombieBehaviour : Interactable
     {
         if (!isActiveAndEnabled || !initialized || !agent.isOnNavMesh || taskStarted || deliveryFinished)
             return;
+        if (TryStartPreparedCookingTask()) return;
         taskStarted = true;
         tomatoDelivery = true;
         interactionText = "Korbauftrag laeuft";
@@ -737,6 +738,9 @@ public partial class ZombieBehaviour : Interactable
     private void OnDisable()
     {
         StopAllCoroutines();
+        RestoreKitchenTomatoVesselCollisions();
+        kitchenTomatoCarry = false;
+        kitchenTomatoPlacing = false;
         ReleaseCookingPot();
         harvesting = false;
         reaching = false;
@@ -835,7 +839,7 @@ public partial class ZombieBehaviour : Interactable
         if (heldTomato != null)
         {
             Rigidbody fruitBody = heldTomato.GetComponent<Rigidbody>();
-            Vector3 handPosition = FingerGripPosition;
+            Vector3 handPosition = kitchenTomatoCarry ? KitchenTomatoGripGoal() : FingerGripPosition;
             fruitBody.MovePosition(handPosition - (fruitBody.worldCenterOfMass - fruitBody.position));
         }
         if (carriedBasket == null) return;
@@ -865,21 +869,28 @@ public partial class ZombieBehaviour : Interactable
     {
         RestorePotBend();
         float desiredLean = reaching && harvestHandTarget.y < rightUpperArm.position.y ? 30f : 0f;
+        // Die Bodenaufnahme verwendet dieselbe Spine-/Arm-IK wie andere Interaktionen,
+        // darf sich fuer tiefe Gegenstaende aber staerker vorbeugen.
+        if (groundPickupReaching)
+            desiredLean = Mathf.Max(desiredLean, groundPickupBendAngle);
         interactionLean = Mathf.MoveTowards(interactionLean, desiredLean, 75f * Time.deltaTime);
         if (interactionSpine != null)
             interactionSpine.rotation = Quaternion.AngleAxis(interactionLean, transform.right) * interactionSpine.rotation;
         PoseCookingPot();
         if (reaching || heldTomato != null)
         {
-            Vector3 target = reaching ? harvestHandTarget :
-                rightUpperArm.position + transform.forward * 0.25f - transform.up * 0.12f;
+            Vector3 target = kitchenTomatoCarry ? KitchenTomatoGripGoal() :
+                (reaching ? harvestHandTarget :
+                    rightUpperArm.position + transform.forward * 0.25f - transform.up * 0.12f);
             Quaternion handRotation = Quaternion.LookRotation(-transform.up, transform.forward);
             Vector3 fingerOffset = handRotation * Vector3.up * FingerGripDistance;
             PoseCarryingArm(rightUpperArm, rightForearm, rightHand, target - fingerOffset);
             rightHand.rotation = handRotation;
         }
-        if (heldTomato != null)
+        if (heldTomato != null && !kitchenTomatoCarry)
         {
+            // Originales Verhalten beim Ernten im Garten.
+            // Kuechentomaten folgen dagegen der weichen Trajektorie in FixedUpdate.
             Rigidbody fruitBody = heldTomato.GetComponent<Rigidbody>();
             heldTomato.transform.position += FingerGripPosition - fruitBody.worldCenterOfMass;
         }
