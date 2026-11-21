@@ -6,6 +6,7 @@ Diese Sammlung dokumentiert ausgewählte Entwicklungsschritte mit Gameplay-Mater
 
 ## Einträge
 
+- **[21.11.2026 – Buch der kleinen Wunder](2026-11-21-buch-der-kleinen-wunder.md)** – Covergestaltung, animierter Buchrücken und zehn Seiten in Unity, mit Bildbelegen und offenem Pickup-Playtest.
 - **[15.11.2026 – Zombie-Navigation über die Wendeltreppe](2026-11-15-zombie-wendeltreppe-navmesh.md)** – NavMesh-Iteration, Küchen-Zielpunkt, Console-Diagnose (`remainingDistance = Infinity`) und erfolgreiche Korrektur der NPC-Interaktionsschlaufe; Bildbelege zum Hochladen vorbereitet.
 - **[04.11.2026 – Vom Garten zur Tomatensuppe](2026-11-04-garten-zur-tomatensuppe.md)** – Spielbarer Ablauf von der Ernte bis zur fertigen Suppe, mit Video und Reflexion.
 - **[01.11.2026 – Modulares Mauerwerk für den Schlossturm](2026-11-01-turmmauer.md)** – Blender-Zwischenstand mit zehn Originalaufnahmen.
