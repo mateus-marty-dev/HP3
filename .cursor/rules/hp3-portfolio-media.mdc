@@ -1,0 +1,15 @@
+---
+description: Bilder und Videos für HP.3-Portfolioeinträge aus lokalen Quellen auswählen
+alwaysApply: true
+---
+
+# Medien für HP.3-Portfolioeinträge
+
+Diese Regel gilt für beauftragte Portfolio-Sessions, Fallstudien und Wochenlogs. Befolge `AGENTS.md` und den Portfolio-Leitfaden, sofern vorhanden.
+
+1. Suche bei der Erstellung eines Eintrags eigenständig nach Medien. Beginne mit vorhandenen Belegen unter `Docs/Portfolio/media/` und mit Anhängen der Session. Prüfe in der lokalen Windows-Sitzung zusätzlich den eingebundenen Ordner `Screenshots` (Standardpfad `%USERPROFILE%\Pictures\Screenshots`). Prüfe dort auch Videos. Weitere Videoordner nur verwenden, wenn der Nutzer sie als HP.3-Medienquelle benannt oder zum HP.3-Arbeitsbereich hinzugefügt hat. Nutze in einer Cloud-Sitzung die tatsächlich erreichbaren Quellen.
+2. Grenze die Kandidaten nach Session oder Berichtszeitraum, Dateiname und Aufnahmedatum ein. Ein Zeitstempel ist ein Suchhinweis. Ordne Medien erst nach Sichtprüfung einer Session zu. Beginne mit relevanten Aufnahmen statt das gesamte private Archiv zu durchsuchen.
+3. Wähle wenige unterschiedliche Motive nach Aussagekraft: ein gut lesbares Hauptbild, bei Bedarf ein vergleichbares Vorher-Nachher-Paar oder eine Unity-/Blender-Ansicht für einen konkreten Befund. Bevorzuge klare Perspektiven und Aufnahmen mit wenig Ablenkung. Überspringe Duplikate, unscharfe Bilder und private oder fachfremde Inhalte. Ein passendes Bild genügt, wenn es den Befund zeigt.
+4. Bei Bewegung, Interaktion oder Spielerführung kann ein kurzer Clip mehr zeigen als mehrere Standbilder. Prüfe die relevante Sequenz, wenn Wiedergabe möglich ist, und gib den passenden Zeitabschnitt an. Einzelbilder aus einem Clip belegen nur die sichtbaren Zustände. Wenn nur Dateiname, Metadaten oder ein Vorschaubild zugänglich sind, kennzeichne den Clip entsprechend als ungeprüft. Behaupte keinen erfolgreichen Playtest allein aus einem Screenshot, einer Konfiguration oder einem ungeprüften Clip.
+5. Nenne für die Auswahl Dateiname, sichtbaren Inhalt, Bezug zur Designentscheidung oder zum technischen Befund und eine kurze Bildunterschrift. Kennzeichne fehlende Ansichten oder Nachweise. Führe lokale Kandidaten in der Vorschau im Chat auf, bis der Nutzer ihre Übernahme freigibt. Verwende in einem Repository-Eintrag relative Links zu vorhandenen, freigegebenen Medien.
+6. Lasse Originale unangetastet. Kopiere ausgewählte Dateien nur mit ausdrücklicher Freigabe unter `Docs/Portfolio/media/`. Keine lokalen Pfade oder privaten Aufnahmen in GitHub-Berichte übernehmen. Für veröffentlichte Medien gilt der vereinbarte Pull-Request-Ablauf.
