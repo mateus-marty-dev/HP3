@@ -1,0 +1,14 @@
+---
+description: HP.3-Portfolio mit Cursor dokumentieren und geprüfte ChatGPT-Reflexion übergeben
+alwaysApply: true
+---
+
+# HP.3 Portfolio
+
+- Diese Regel gilt für Portfolio-Aufträge und die Marker `<session_S>` und `<session_E>`. Befolge die Freigaberegeln in `AGENTS.md`. Ein Marker allein erlaubt keine Dateiänderung.
+- Lies bei solchen Aufträgen zuerst `Docs/Portfolio/CURSOR_WORKFLOW.md`. Verwende die vorhandenen Vorlagen und suche nach der passenden manuellen Session sowie einem bereits vorhandenen Wochenbericht.
+- Cursor prüft Git-Stand, technische Befunde und Nachweise. ChatGPT liefert gestalterische Reflexion über eine vom Nutzer ausgewählte Übergabe. Ordne Aussagen ihrer Quelle zu und kennzeichne Vermutungen und offene Fragen.
+- Ein Diff belegt eine Dateiänderung. Für eine Aussage über Laufzeitverhalten braucht es einen konkreten Test- oder Beobachtungsnachweis. Verlinke nur zugängliche, geprüfte Medien und benenne fehlende Belege.
+- Berichte auf ausdrücklichen Auftrag als neue Dateien anlegen. Bestehende Sessions, Vorlagen, Übersichten und Medien schützen. Einen ausdrücklich beauftragten README-Link zu einer neuen Session separat prüfen.
+- Freigegebene Repository-Änderungen auf einem separaten Branch zur Prüfung gegen `main` vorschlagen. Vorher den Diff und die Nachweise prüfen. Kein automatischer Merge oder Force-Push.
+- Die vorhandene Sonntagsaufgabe liefert den Wochenimpuls. Cursor übernimmt ihn auf Anfrage über den Leitfaden. Keinen weiteren Zeitplan anlegen.
