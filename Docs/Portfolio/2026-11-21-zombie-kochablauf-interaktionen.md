@@ -3,7 +3,7 @@
 - **Projekt:** HP.3 – *Petrusilius’ Schloss*
 - **Bereich:** Level Design, Environment & World Building, NPC-Gameplay, Unity-Physik und Navigation
 - **Werkzeuge:** Unity 6 (C#, NavMeshAgent / AI Navigation, Animator, Rigidbody, Collider), Visual Studio, Console, Git und Chat-basierte Fehlersuche
-- **Status:** **Iterativer Playtest / technisch noch nicht abgeschlossen**
+- **Status:** **Zusammenhängender Kochdurchlauf im Gameplay-Video vom 23.11.2026 dokumentiert; Robustheit und weitere Tests offen**
 - **Zeit:** Keine vollständig verlässliche Start-/Endzeit dokumentiert; die hier ausgewerteten Screenshots und Tests stammen vom **20.–21.11.2026**.
 - **Integrationsstand:** In der lokalen Unity-Szene wurden Teilabläufe erfolgreich getestet, gleichzeitig gab es Regressionen bei der Pfannenaufnahme und Herdnavigation. Dieser Portfolio-Eintrag synchronisiert **keine Gameplay-Scripts oder Szenendaten** nach GitHub.
 - **Bezug:** [Zombie und Wendeltreppe (15.11.)](2026-11-15-zombie-wendeltreppe-navmesh.md) · [Vom Garten zur Tomatensuppe (04.11.)](2026-11-04-garten-zur-tomatensuppe.md)
@@ -98,9 +98,36 @@ Die folgenden vier **Original-Screenshots aus dem Playtest** wurden für die Por
 
 **Bereits im Repository verfügbarer Kontext (keine Aufnahme dieser Zombie-Session):** [Gameplay-Video „Vom Garten zur Tomatensuppe“](media/2026-11-04-garten-zur-tomatensuppe-kurz.mp4?raw=true). Dieses zeigt die räumliche Spielumgebung und die bestehende Spieler-Kochhandlung. Die [Dokumentation der Turmmauer](2026-11-01-turmmauer.md) enthält zudem Originalaufnahmen des Schlossturms.
 
+## Nachtrag vom 23.11.2026 – Gameplay-Video als Ergebnisnachweis
+
+Der Entwickler hat am 23.11.2026 eine zusammenhängende Gameplay-Aufnahme bereitgestellt: **`Zombie_Citchen_Routin(1).mp4`**, Länge **6:10,7 Minuten**, Original **2030 × 1342 Pixel / 30 fps** mit Ton. Die Aufnahme dokumentiert einen fortgeschrittenen Stand der autonomen Zombie-Kochroutine **nach** den oben beschriebenen Debugging-Iterationen.
+
+### Beobachtbare Stationen (ungefähre Timecodes)
+
+| Videozeit | Sichtbares Verhalten / Portfolio-Relevanz |
+|---|---|
+| **0:00–1:15** | Zombie im Garten, Aufnahme von Tomaten und Arbeit am Korb; Ausgangspunkt und Interaktionsobjekte werden sichtbar. |
+| **1:15–2:15** | Transport Richtung Turm und Weg über die Wendeltreppe zur Küche; räumliche Verbindung zwischen Garten und Kochstelle. |
+| **2:15–3:15** | Zombie trägt die Pfanne nach draussen, gelangt zum Teich und schöpft Wasser. |
+| **3:15–4:45** | Rückweg mit der Pfanne, Küchenarbeit und Umgang mit ausgeschütteten Tomaten. |
+| **4:45–5:15** | Brennendes Herdfeuer und Pfanne auf der Herdplatte. Der Zombie steht bei diesem Durchlauf **neben** dem Herd, nicht auf ihm. |
+| **5:15–6:10** | Kochphase mit sichtbarer Flüssigkeitsbewegung, Dampf und abschliessendem Farbwechsel zur roten Tomatensuppe. |
+
+**Neuer belegbarer Stand:** Im Video ist ein **zusammenhängender Kochdurchlauf bis zum sichtbaren Suppenergebnis** aufgezeichnet. Das ist ein wichtiger Fortschritt gegenüber den vorherigen Einzeltests und Regressionen. Die exakte Anzahl der einzeln eingelegten Tomaten lässt sich aus dieser Übersicht nicht für jeden Frame unabhängig bestätigen. Ein gelungener Durchlauf belegt ausserdem **noch keine** hundertprozentige Robustheit bei anderen Gegenstandspositionen oder NavMesh-Situationen.
+
+**Medienstatus:** Das Video wurde für die Portfolio-Ablage zusätzlich als rund **18 MB grosse MP4-Fassung (960 Pixel Breite, 15 fps)** vorbereitet; sechs aussagekräftige Standbilder wurden extrahiert. Die Binärdateien sind zum Dokumentationszeitpunkt **noch nicht im GitHub-Medienverzeichnis**. Es werden deshalb hier bewusst keine nicht existierenden Medienlinks gesetzt. Vorgesehene Ablage: `Docs/Portfolio/media/2026-11-23-zombie-kochdurchlauf/`.
+
+**Auswahl der sechs Videostandbilder:** `01-tomate-pfluecken.jpg`, `02-wendeltreppe.jpg`, `03-wasser-holen.jpg`, `04-kueche-tomaten.jpg`, `05-pfanne-herd.jpg`, `06-fertige-tomatensuppe.jpg`.
+
+### Aktualisierung der Reflexion
+
+Die Aufnahme bestätigt, dass die Aufgabenfolge **Garten → Treppe → Teich → Küche → Herd → Suppe** im aktuellen Prototyp nicht nur als Plan existiert, sondern in einem aufgezeichneten Run zusammenspielt. Für eine Portfolio-Präsentation zeigt gerade die Kombination aus räumlicher Führung und selbstständigem Umgang mit physischen Gegenständen den Designwert. Die dokumentierten Fehlversuche bleiben dennoch relevant: Sie zeigen, welche Grenzen der Standplatzsuche und NPC-Architektur für spätere Aufgaben noch bestehen.
+
+
 ## Session_E – Ergebnis und Reflexion
 
 ### Erreicht / beobachtet
+- **23.11.2026:** Durchgehende Videoaufzeichnung von Gartenarbeit und Transport über Wasserholen und Herd bis zum sichtbaren Ergebnis einer roten Suppe. Für diesen Lauf steht der Zombie beim Kochen neben dem Herd.
 - Funktionierenden **Einzeltest** zum Aufnehmen einer Tomate und sanften Ablegen in einen Korb entwickelt; Nutzer bestätigte den Erfolg.
 - Funktionierende Teile der Zombie-Kochroutine erweitert: Korb ausleeren, einzelne Bodentomaten aufnehmen und in die Pfanne ablegen.
 - Zustandsorientierten Startcheck für Wasser und Tomaten eingeführt; direkte Herdinteraktion bei vorbereitetem Gericht erprobt.
@@ -110,7 +137,7 @@ Die folgenden vier **Original-Screenshots aus dem Playtest** wurden für die Por
 ### Offen / nicht zuverlässig nachgewiesen
 - Alle vier ausgeschütteten Tomaten in **jedem** Durchlauf aufnehmen.
 - Sicherstellen, dass der Zombie nach dem Anzünden stets **auf dem Küchenboden** bleibt.
-- Vollständigen Ablauf Feuer → Topf aufnehmen → Topf korrekt abstellen **ohne** NavMesh-/Greifregression.
+- Den im Videodurchlauf beobachteten erfolgreichen Ablauf Feuer → Topf aufnehmen → Topf abstellen **wiederholt** und unter unterschiedlichen Startpositionen auf NavMesh-/Greifregressionen testen.
 - Die aktuelle lokale Szenen- und Scriptversion kontrolliert nach GitHub synchronisieren.
 - Medienbilder in die geplante GitHub-Ablage einspielen, sobald ein Binärdatei-Upload möglich ist.
 
@@ -122,13 +149,15 @@ Die Iterationen verdeutlichen, dass **begehbarer Weg**, **physikalische Erreichb
 
 ### Kurztext
 
+Der am 23.11.2026 aufgezeichnete vollständige Kochdurchlauf ergänzt die folgenden technischen Lernschritte um einen sichtbaren, zusammenhängenden Ergebnisnachweis: vom Garten bis zur rot werdenden Suppe auf dem Herd. Die Stabilität über mehrere unterschiedliche Testläufe ist weiterhin zu evaluieren.
+
 In *Petrusilius’ Schloss* soll ein Zombie als tollpatschiger Gehilfe selbstständig Zutaten einsammeln, Gefässe transportieren und am Herd kochen. Ich verband Navigation über einen engen Schlossturm, physikalisches Greifen und zustandsabhängige Aufträge zu einer zunehmend komplexen Interaktionsschlaufe. Isolierte Playtests halfen, das Greifen und sanfte Ablegen von Tomaten zuverlässig zu entwickeln; Console-Diagnosen deckten anschliessend Grenzfälle zwischen NavMesh, Standplatz und Herdgeometrie auf. Die Arbeit zeigt meinen Schwerpunkt an der Schnittstelle von **Level Design, Environmental Interaction und Technical Gameplay** – einschliesslich der Entscheidung, eine zu gross gewordene Routine in wiederverwendbare Module zu überführen.
 
 ### Nächste Schritte
 
 - [ ] Herdfläche im **NavMesh** zuverlässig als nicht begehbar markieren; sicherer Boden-Standplatz bleibt erreichbar.
 - [ ] Feuer und Topfablage mit getrennten, nachvollziehbaren Reichweitenprüfungen testen.
-- [ ] Vier-Tomaten-Durchlauf mit Screenshots/Video vollständig nachweisen.
+- [ ] Gezielte Nahaufnahme der vier einzeln aufgenommenen Tomaten und Wiederholung mit veränderten Ausgangspositionen dokumentieren.
 - [ ] Aktuelle Gameplay-Scripts kontrolliert versionieren und den stabilen Stand im Repository sichern.
 - [ ] `ZombieKitchenRoutine.cs` in kleinere, **verhaltensneutrale** Module aufteilen.
-- [ ] Die vier Original-Screenshots über den Repository-Medienordner nachpflegen.
+- [ ] Die vier vorherigen Screenshots sowie das neue Gameplay-Video und sechs Videostandbilder in den Repository-Medienordner hochladen.
